@@ -1,0 +1,14 @@
+{
+  "version": "0.0.0",
+  "name": "frie-sange",
+  "authors": [
+    "Rasmus Erik Voel Jensen (solsort.com)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rasmuserik/frie-sange.git"
+  },
+  "dependencies": {
+    "js-yaml": "~3.0.2"
+  }
+}
