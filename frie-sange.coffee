@@ -1,3 +1,22 @@
+# {{{1 Roadmap
+#
+# - overview 4x3 with links to 11 songs + 1 info on open content
+# - full song (click on verse to open, swipe to next song, link til oversigt)
+# - individual verse (swipe to next/previous verse - or back to full song)
+#
+# {{{2 Tasks
+#
+# - version 0.1.0
+#   - the actual song texts
+#   - open-content-info / motivation / description of sources etc.
+#   - generate static html with linked data
+# - version 0.2.0
+#   - zoom/layout text to fit within window
+#   - gesture handling
+#   - zoom for individual verses
+# - version 0.3.0
+#   - graphics to each song, with metainfo on placement
+#
 # {{{1 Boilerplate
 # predicates that can be optimised away by uglifyjs
 if typeof isNodeJs == "undefined" or typeof runTest == "undefined" then do ->
