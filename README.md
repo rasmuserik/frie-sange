@@ -41,6 +41,7 @@ execute main
 
 # code
 
+    uu = require "uutil"
     onReady ->
       console.log "HERE"
     
@@ -50,6 +51,25 @@ execute main
       songs[title] = obj
       console.log songs
     
+
+# Information page
+
+- motivation
+- approach
+  - Songs are based on multible sources
+  - Most are traditionals
+- sources
+  - wikipedia
+  - ugle.dk
+  - din egen sangbog
+  - diverse søgeresultater ved søgning på nettet.
+- noter
+  - oppe i norge er en krydsning af den danske og oprindelige norske, med tilføjede vers, gendigtet, inspireret af http://www.barnesanger.no/olle-bolle.html
+  - lille peter eddekop det almindelige vers er frit / tradionelt, 
+    - øvrige vers blev tilføjet i 1948 og er ophavsretsligt begrænset
+
+    info = ["div"
+      ""]
 
 # Actual songs
 
@@ -106,10 +126,45 @@ execute main
     
     song "Lille Peter Edderkop", #{{{2
       lyrics: """
-         """
+        Lille Peter Edderkop,
+          kravlede op ad muren.
+        Så kom regnen
+          og skyllede Peter ned,
+        Så kom solen
+          og tørrede Peters krop.
+        Lille Peter Edderkop
+          kravlede atter op."""
     song "Mæ siger det lille lam", #{{{2
       lyrics: """
-         """
+        Mæ, siger det lille lam,
+        mor, jeg fryser, jeg vil hjem!
+        Mæ, siger det store får,
+        vent, til aftenklokken slår
+        så skal du nok komme hjem. Mæ!
+        
+        Rap, siger ænderne små,
+        nu skal det lystigt hjemad gå.
+        Sove vi skal, til sol står op,
+        så skal i vandet vi pjaske vor krop.
+        Rap, siger ænderne små. Rap!
+        
+        Mjav, siger den lille kat,
+        nu vil jeg sove så sødt i nat.
+        I morgen skal vi lege igen,
+        for jeg vil helst lege dagen hen.
+        Mjav siger den lille kat. Mjav!
+        
+        Prr, siger den gamle hest,
+        jeg vil trækk som jeg kan bedst.
+        Gid jeg stod i min varme stald
+        og hørte i dag ej flere knald,
+        Prrr siger den gamle hest. Prrr!
+        
+        Vov, siger den store hund,
+        våge må jeg endnu en stund,
+        fare om og passe på,
+        at de trygt til ro kan gå.
+        Vov, siger den store hund. Vov!"""
     song "Ride ride ranke", #{{{2
       lyrics: """
          """
@@ -118,10 +173,45 @@ execute main
          """
     song "Mester Jakob", #{{{2
       lyrics: """
-         """
+        Mester Jakob, 
+        Mester Jakob.
+        Sover du, 
+        sover du?
+        Hører du ej klokken, 
+        hører du ej klokken?
+        Bim bam bum,
+        bim bam bum."""
     song "Oppe i Norge der boede tre trolde", #{{{2
       lyrics: """
-         """
+        Oppe i Norge, der boede tre trolde,
+        troldefar og troldemor og lille olle-bolle 
+        BØH sagde troldefar
+        Bøh sagde troldemor
+        og den lille olle bolle sagde bare <small>bøh</small>
+    
+        Ude i skoven, der boede tre bjørne,
+        bjørnefar og bjørnemor, og lille ørne-børne
+        ROAR sagde bjørnefar
+        Roar sagde bjørnemor
+        og den lille ørne-børne sagde bare <small>roar</small>
+    
+        Oppe på loftet, der boede tre katte,
+        kattefar og kattemor, og lille katte-batte
+        MJAV sagde kattefar
+        Mjav sagde kattemor
+        og den lille katte-batte sagde bare <small>mjav</small>
+    
+        Ude på marken, der boede tre heste,
+        hestefar og hestemor, og lille heste-beste
+        PRR sagde hestefar
+        Prr sagde hestemor
+        og den lille heste-beste sagde bare <small>prr</small>
+    
+        Oppe i træet, der boede tre krager,
+        kragefar og kragemor, og lille krage-brage
+        KRRA sagde kragefar
+        Krra sagde kragemor
+        og den lille krage-brage sagde bare <small>krra</small>"""
     song "Tommelfinger, tommelfinger hvor er du", #{{{2
       lyrics: """
          """
