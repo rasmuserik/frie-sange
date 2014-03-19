@@ -128,36 +128,159 @@ song "Mæ siger det lille lam", #{{{2
     Mæ, siger det store får,
     vent, til aftenklokken slår
     så skal du nok komme hjem. Mæ!
-    
+
     Rap, siger ænderne små,
     nu skal det lystigt hjemad gå.
     Sove vi skal, til sol står op,
     så skal i vandet vi pjaske vor krop.
     Rap, siger ænderne små. Rap!
-    
+
     Mjav, siger den lille kat,
     nu vil jeg sove så sødt i nat.
     I morgen skal vi lege igen,
     for jeg vil helst lege dagen hen.
     Mjav siger den lille kat. Mjav!
-    
+
     Prr, siger den gamle hest,
     jeg vil trækk som jeg kan bedst.
     Gid jeg stod i min varme stald
     og hørte i dag ej flere knald,
     Prrr siger den gamle hest. Prrr!
-    
+
     Vov, siger den store hund,
     våge må jeg endnu en stund,
     fare om og passe på,
     at de trygt til ro kan gå.
     Vov, siger den store hund. Vov!"""
 song "Ride ride ranke", #{{{2
+  author: "Nikloaj Ulrik Krossing (1798-1872)"
+  composer: "Johan Christian Gebauer (1808-1884)"
   lyrics: """
-     """
+    Hop, hop, hop, hop,
+    hop, hop, hop, hop!
+    Ride, ride ranke!
+    Greven er så højt på strå,
+    bonden må med træsko gå.
+    Ride, ride, ranke!
+
+    Hop, hop, hop, hop,
+    hop, hop, hop, hop!
+    Ride, ride, ranke!
+    Junkren på sin høje hest,
+    som kan danse, ret gør blæst.
+    Ride, ride, ranke!
+
+    Hop, hop, hop, hop,
+    hop, hop, hop, hop!
+    Ride, ride, ranke!
+    Frøknen sidder let som fjer,
+    som min lille rytter her.
+    Ride, ride, ranke!
+
+    Hop, hop, hop, hop,
+    hop, hop, hop, hop!
+    Ride, ride, ranke!
+    Hvorhen skal nu vejen gå?
+    Bedstefar besøg skal få.
+    Ride, ride, ranke!
+
+    Hop, hop, hop, hop,
+    hop, hop, hop, hop!
+    Ride, ride, ranke!
+    Og når vi så stiger af,
+    siger vi: go' da', go' da'!
+    Ride, ride, ranke!
+
+    Hop, hop, hop, hop,
+    hop, hop, hop, hop!
+    Ride, ride, ranke!
+    Bedstemor af hjertesgrund
+    trykker os et kys på mund.
+    Ride, ride, ranke!
+
+    Hop, hop, hop, hop,
+    hop, hop, hop, hop!
+    Ride, ride, ranke!
+    Nu til onkel i galop.
+    Er han hjemme? Ja, så stop!
+    Ride, ride, ranke!
+
+    Hop, hop, hop, hop,
+    hop, hop, hop, hop!
+    Ride, ride, ranke!
+    Tantes stuedør vil vi
+    heller ikke gå forbi.
+    Ride, ride, ranke!
+
+    Hop, hop, hop, hop,
+    hop, hop, hop, hop!
+    Ride, ride, ranke!
+    Men nu er det aftenstid,
+    lille hest, i stalden hid!
+    Ride, ride, ranke!
+
+    Hop, hop, hop, hop,
+    hop, hop, hop, hop!
+    Ride, ride, ranke!
+    Til i morgen stå i ro,
+    havre først: et kys ja to!
+    Ride, ride, ranke!"""
 song "Jeg gik mig over sø og land", #{{{2
   lyrics: """
-     """
+    Jeg gik mig over sø og land,
+    der mødte jeg en gammel mand.
+    Han sagde så og spurgte så:
+    Og hvor har du så hjemme?
+    Jeg har hjemme i trampeland,
+    trampeland, trampeland,
+    alle de som trampe kan,
+    de har hjemme i trampeland.
+
+    Jeg gik mig over sø og land,
+    der mødte jeg en gammel mand.
+    Han sagde så og spurgte så:
+    Og hvor har du så hjemme?
+    Jeg har hjemme i vinkeland,
+    vinkeland, vinkeland,
+    alle de som vinke kan,
+    de har hjemme i vinkeland.
+
+    Jeg gik mig over sø og land,
+    der mødte jeg en gammel mand.
+    Han sagde så og spurgte så:
+    Og hvor har du så hjemme?
+    Jeg har hjemme i hoppeland,
+    hoppeland, hoppeland,
+    alle de som hoppe kan,
+    de har hjemme i hoppeland.
+
+    Jeg gik mig over sø og land,
+    der mødte jeg en gammel mand.
+    Han sagde så og spurgte så:
+    Og hvor har du så hjemme?
+    Jeg har hjemme i klappeland,
+    klappeland, klappeland,
+    alle de som klappe kan,
+    de har hjemme i klappeland.
+
+    Jeg gik mig over sø og land,
+    der mødte jeg en gammel mand.
+    Han sagde så og spurgte så:
+    Og hvor har du så hjemme?
+    Jeg har hjemme i hinkeland,
+    hinkeland, hinkeland,
+    alle de som hinke kan,
+    de har hjemme i hinkeland.
+
+    Jeg gik mig over sø og land,
+    der mødte jeg en gammel mand.
+    Han sagde så og spurgte så:
+    Og hvor har du så hjemme?
+    Jeg har hjemme i trommeland,
+    trommeland, trommeland,
+    alle de som tromme kan,
+    de har hjemme i trommeland.
+"""
 song "Mester Jakob", #{{{2
   lyrics: """
     Mester Jakob, 
@@ -201,10 +324,221 @@ song "Oppe i Norge der boede tre trolde", #{{{2
     og den lille krage-brage sagde bare <small>krra</small>"""
 song "Tommelfinger, tommelfinger hvor er du", #{{{2
   lyrics: """
-     """
+    Tommelfinger, tommelfinger,
+    hvor er du?
+    Her er jeg, her er jeg
+    Goddag, goddag, goddag.
+    
+    Pegefinger, pegefinger,
+    hvor er du?
+    Her er jeg, her er jeg
+    Goddag, goddag, goddag.
+    
+    Langefinger, langefinger,
+    hvor er du?
+    Her er jeg, her er jeg
+    Goddag, goddag, goddag.
+    
+    Ringefinger, ringefinger,
+    hvor er du?
+    Her er jeg, her er jeg
+    Goddag, goddag, goddag.
+    
+    Lillefinger, lillefinger,
+    hvor er du?
+    Her er jeg, her er jeg
+    Goddag, goddag, goddag.
+    
+    Alle fingre, alle fingre,
+    hvor er I?
+    Her er vi, her er vi,
+    Goddag, goddag, goddag."""
 song "I skoven skulle være gilde", #{{{2
   lyrics: """
-     """
+    I skoven skulle være gilde
+    alt hos den gamle ørn,
+    som jo så gerne ville
+    fornøje sine børn.
+    Og alle fugle sjunge
+    og røre deres tunge,
+    så snart som lærken gi'r signal
+    af næbbets futteral,
+    så snart som lærken gi'r signal
+    af næbbets futteral.
+    
+    At byde gæster mange
+    den hane skulle gå,
+    han havde ben så lange
+    med krumme sporer på.
+    Han råbte: "Kykliky!"
+    tre gange i hver by,
+    at byde alle fugle små
+    til ørnens gilde så,
+    at byde alle fugle små
+    til ørnens gilde så.
+    
+    Den tømmermand, hr. spætte,
+    han skulle bygge hus,
+    og svalen taget tætte
+    med skovens grønne mos.
+    Og salen skulle pyntes,
+    hvor gildet skulle stå,
+    med røde sneglehuse
+    og fine bolstre blå,
+    med røde sneglehuse
+    og fine bolstre blå.
+    
+    Og ravnen skulle også
+    være deres præst,
+    hans sorte kjole viste,
+    at han var kaldet næst.
+    Han var en højlærd Mand,
+    klog over al forstand,
+    han holdt den bedste prædiken,
+    der hørtes i vort land,
+    han holdt den bedste prædiken,
+    der hørtes i vort land.
+    
+    Og stæren skulle også
+    være deres degn,
+    han kan så dejlig synge,
+    skønt han er meget klejn.
+    Hans sang den er en lyst,
+    han har en dejlig røst,
+    han er jo ren i mælet
+    og dertil let for bryst,
+    han er jo ren i mælet
+    og dertil let for bryst.
+    
+    De havde og to spillemænd,
+    og de var meget små,
+    det var den lille nattergal
+    og så den lærke grå.
+    De spilled menuet,
+    og det gik nok så net,
+    til alle udi dansen
+    var bleven ganske træt,
+    til alle udi dansen
+    var bleven ganske træt.
+    
+    Og uglen var til gilde,
+    hun drak sig ganske fuld,
+    om aftenen så silde
+    hun faldt i græs omkuld.
+    Hun råbte med stor klage:
+    "I alle mine dage,
+    ja alle mine dage
+    stor nød jeg lide må,
+    ja alle mine dage
+    stor nød jeg lide må".
+    
+    Og ørnen gik til hende
+    og sagde: "Hør, min ven,
+    når mener du, at du vel
+    kan komme dig igen?"
+    "O ve, o ve, o plage,
+    jeg kan det godt forstå,
+    at mine levedage,
+    de er nu ganske få,
+    at mine levedage,
+    de er nu ganske få"."""
 song "Langt ude i skoven", #{{{2
   lyrics: """
-     """
+    Lange ude i skoven, der lå et lille bjerg,
+    aldrig så jeg, så dejligt et bjerg:
+    Bjerget ligger langt ude i skoven.
+
+    På det lille bjerg, der stod et lille træ,
+    aldrig så jeg så dejligt et træ:
+    Træet på bjerget.
+    Bjerget ligger langt ude i skoven.
+
+    På det lille træ, der sad en lille gren,
+    aldrig så jeg så dejlig en gren:
+    Grenen på træet.
+    Træet på bjerget.
+    Bjerget ligger langt ude i skoven.
+
+    På den lille gren, der sad en lille kvist,
+    aldrig så jeg så dejlig en kvist:
+    Kvisten på grenen.
+    Grenen på træet.
+    Træet på bjerget.
+    Bjerget ligger langt ude i skoven.
+
+    På den lille kvist, der sad et lille blad,
+    aldrig så jeg så dejligt et blad:
+    Bladet på kvisten.
+    Kvisten på grenen.
+    Grenen på træet.
+    Træet på bjerget.
+    Bjerget ligger langt ude i skoven.
+
+    På det lille blad, der var en lille rede,
+    aldrig så jeg så dejlig en rede:
+    Reden på bladet.
+    Bladet på kvisten.
+    Kvisten på grenen.
+    Grenen på træet.
+    Træet på bjerget.
+    Bjerget ligger langt ude i skoven.
+
+    I den lille rede var et lille æg,
+    aldrig så jeg så dejligt et æg:
+    Ægget i reden.
+    Reden på bladet.
+    Bladet på kvisten.
+    Kvisten på grenen.
+    Grenen på træet.
+    Træet på bjerget.
+    Bjerget ligger langt ude i skoven.
+
+    Af det lille æg der kom en lille fugl,
+    aldrig så jeg så dejlig en fugl:
+    Fuglen af ægget.
+    Ægget i reden.
+    Reden på bladet.
+    Bladet på kvisten.
+    Kvisten på grenen.
+    Grenen på træet.
+    Træet på bjerget.
+    Bjerget ligger langt ude i skoven.
+
+    På den lille fugl der sad en lille fjer.
+    aldrig så jeg så dejlig en fjer:
+    Fjeren på fuglen.
+    Fuglen af ægget.
+    Ægget i reden.
+    Reden på bladet.
+    Bladet på kvisten.
+    Kvisten på grenen.
+    Grenen på træet.
+    Træet på bjerget.
+    Bjerget ligger langt ude i skoven.
+
+    Af den lille fjer der blev en lille pude,
+    aldrig så jeg så dejlig en pude:
+    Puden af fjeren.
+    Fjeren på fuglen.
+    Fuglen af ægget.
+    Ægget i reden.
+    Reden på bladet.
+    Bladet på kvisten.
+    Kvisten på grenen.
+    Grenen på træet.
+    Træet på bjerget.
+    Bjerget ligger langt ude i skoven.
+
+    På den lille pude der lå en lille dreng,
+    aldrig så jeg så dejlig en dreng:
+    Drengen på puden.
+    Puden af fjeren.
+    Fjeren på fuglen.
+    Fuglen af ægget.
+    Ægget i reden.
+    Reden på bladet.
+    Bladet på kvisten.
+    Kvisten på grenen.
+    Grenen på træet.
+    Træet på bjerget.
+    Bjerget ligger langt ude i skoven."""
