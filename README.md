@@ -41,15 +41,83 @@ execute main
 
 # code
 
-    uu = require "uutil"
-    onReady ->
-      console.log "HERE"
+    if isNodeJs
+      uu = require "uutil"
+      fs = require "fs"
     
-    songs = {}
-    song = (title, obj) ->
-      obj.title = title
-      songs[title] = obj
-      console.log uu.urlString obj.title
+    lyricsJsonml = (song) ->
+      ["div.lyrics"].concat song.lyrics.map (verse) ->
+        ["div.verse"
+          style:
+            margin: "2em"
+            display: "inline-block"
+        ].concat verse.split("\n").map (line) ->
+          ["div.line", ["rawhtml", line]]
+    
+    html = (title, body) ->
+      "<!DOCTYPE html>" + uu.jsonml2html ["html"
+        ["head"
+          ["title", title]
+          ["meta", {"http-equiv": "Content-Type", content: "text/html;charset=UTF-8"}]
+          ["meta", {"http-equiv": "X-UA-Compatible", content: "IE=edge,chrome=1"}]
+          ["meta"
+            name: "viewport"
+            content: "width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0"]
+          ["style", ["rawhtml", "@font-face{font-family:Ubuntu;font-weight:400;src:url(/font/ubuntu-latin1.ttf) format(truetype);}"]]
+          ["style", "
+              body {
+                font:18px ubuntu,sans-serif;
+                line-height: 130%;
+              }
+              .notes {
+                margin-top: 1em;
+                margin-bottom: 1em;
+              }
+            "]
+          ["meta", {name: "format-detection", content: "telephone=no"}]]
+        ["body", body]]
+    
+    songHTML = (song) -> html song.title, ["div", ["h1", song.title], lyricsJsonml song]
+    
+    songs = []
+    song = (title, song) ->
+      song.title = title
+      song.lyrics = song.lyrics.split "\n\n"
+      song.filename = "#{uu.urlString song.title}.html"
+      songs.push song
+      if isNodeJs
+        fs.writeFile song.filename, songHTML song, "utf8"
+    
+    if isNodeJs then process.nextTick ->
+      pages = [{title: "Frie Børnesange", filename: "about.html"}].concat songs
+      content = ["div"]
+      for page in pages
+        content.push ["a"
+            href: page.filename
+            style:
+              display: "inline-block"
+              width: 200
+              height: 200
+              margin: 10
+              padding: 15
+              textAlign: "center"
+              color: "black"
+              textDecoration: "none"
+              fontSize: 30
+              border: "3px solid black"
+              borderRadius: 25
+              verticalAlign: "middle"
+
+vertical centering hack
+
+          ["div", { style: { display: "table", height: 200}}
+            ["div", { style: { display: "table-cell", verticalAlign: "middle"}}
+              page.title]]]
+    
+      fs.writeFile "index.html", html("Frie Børnesange", content), "utf8"
+    
+      fs.writeFile "about.html", html("Frie Børnesange", info), "utf8"
+    
     
 
 # Information page
@@ -69,7 +137,26 @@ execute main
     - øvrige vers blev tilføjet i 1948 og er ophavsretsligt begrænset
 
     info = ["div"
-      ""]
+        ["div"
+            style:
+              display: "inline-block"
+              verticalAlign: "top"
+              width: "44%"
+              paddingLeft: "3%"
+              paddingRight: "3%"
+          ["h1", "Frie Børnesange"]
+          ["div.notes", "Mange børnesange kan hverken synges offentligt, eller deles med andre på grund af ophavsretslige begrænsninger."]
+          ["div.notes", "Dette er en samling af sange, der efter min bedste overbevisning ikke længere er dækket af copyright. De er fundet ved, for hver sang, at gennemsøge sangbøger og internet, og finde forskellige udgaver af sangen, og sikre der enten ikke er kendt forfatter, eller han/hun er død for over 70 år siden."]]
+        ["div"
+            style:
+              display: "inline-block"
+              verticalAlign: "top"
+              width: "44%"
+              paddingLeft: "3%"
+              paddingRight: "3%"
+          ["h1", "- de enkelte sange"]
+          ["div.notes", ["em", "Oppe i Norge"], " er en dansk version af den norske børnesang Oppe i fjeldet. Versionen er en krydsning mellem den danske og den norske traditionelle sange, - med ekstra vers tilføjet på samme form som i den norske. De yderligere vers er gendigtet af undertegnede, frigives hermed som public domain (CC0)."]
+          ["div.notes", ["em", "Lille Peter Eddekop"], " eksisterer så vidt jeg ved i flere udgaver: der det frie traditionelle vers, der anvendes her, men der er også en længere udgave hvor flere vers blev tilføjet i 1948, så yderligere vers man støder på, udover det traditionelle, er typisk under ophavsretslige begrænsninger."]]]
 
 # Actual songs
 
@@ -156,7 +243,7 @@ execute main
         Mjav siger den lille kat. Mjav!
     
         Prr, siger den gamle hest,
-        jeg vil trækk som jeg kan bedst.
+        jeg vil trække som jeg kan bedst.
         Gid jeg stod i min varme stald
         og hørte i dag ej flere knald,
         Prrr siger den gamle hest. Prrr!

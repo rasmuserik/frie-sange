@@ -55,7 +55,16 @@ html = (title, body) ->
         name: "viewport"
         content: "width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0"]
       ["style", ["rawhtml", "@font-face{font-family:Ubuntu;font-weight:400;src:url(/font/ubuntu-latin1.ttf) format(truetype);}"]]
-      ["style", "body{font:18px ubuntu,sans-serif}"]
+      ["style", "
+          body {
+            font:18px ubuntu,sans-serif;
+            line-height: 130%;
+          }
+          .notes {
+            margin-top: 1em;
+            margin-bottom: 1em;
+          }
+        "]
       ["meta", {name: "format-detection", content: "telephone=no"}]]
     ["body", body]]
 
@@ -78,10 +87,25 @@ if isNodeJs then process.nextTick ->
         href: page.filename
         style:
           display: "inline-block"
-      page.title]
-    content.push " "
+          width: 200
+          height: 200
+          margin: 10
+          padding: 15
+          textAlign: "center"
+          color: "black"
+          textDecoration: "none"
+          fontSize: 30
+          border: "3px solid black"
+          borderRadius: 25
+          verticalAlign: "middle"
+      # vertical centering hack
+      ["div", { style: { display: "table", height: 200}}
+        ["div", { style: { display: "table-cell", verticalAlign: "middle"}}
+          page.title]]]
 
   fs.writeFile "index.html", html("Frie Børnesange", content), "utf8"
+
+  fs.writeFile "about.html", html("Frie Børnesange", info), "utf8"
 
 
 #{{{1 Information page
@@ -100,7 +124,26 @@ if isNodeJs then process.nextTick ->
 #   - lille peter eddekop det almindelige vers er frit / tradionelt, 
 #     - øvrige vers blev tilføjet i 1948 og er ophavsretsligt begrænset
 info = ["div"
-  ""]
+    ["div"
+        style:
+          display: "inline-block"
+          verticalAlign: "top"
+          width: "44%"
+          paddingLeft: "3%"
+          paddingRight: "3%"
+      ["h1", "Frie Børnesange"]
+      ["div.notes", "Mange børnesange kan hverken synges offentligt, eller deles med andre på grund af ophavsretslige begrænsninger."]
+      ["div.notes", "Dette er en samling af sange, der efter min bedste overbevisning ikke længere er dækket af copyright. De er fundet ved, for hver sang, at gennemsøge sangbøger og internet, og finde forskellige udgaver af sangen, og sikre der enten ikke er kendt forfatter, eller han/hun er død for over 70 år siden."]]
+    ["div"
+        style:
+          display: "inline-block"
+          verticalAlign: "top"
+          width: "44%"
+          paddingLeft: "3%"
+          paddingRight: "3%"
+      ["h1", "- de enkelte sange"]
+      ["div.notes", ["em", "Oppe i Norge"], " er en dansk version af den norske børnesang Oppe i fjeldet. Versionen er en krydsning mellem den danske og den norske traditionelle sange, - med ekstra vers tilføjet på samme form som i den norske. De yderligere vers er gendigtet af undertegnede, frigives hermed som public domain (CC0)."]
+      ["div.notes", ["em", "Lille Peter Eddekop"], " eksisterer så vidt jeg ved i flere udgaver: der det frie traditionelle vers, der anvendes her, men der er også en længere udgave hvor flere vers blev tilføjet i 1948, så yderligere vers man støder på, udover det traditionelle, er typisk under ophavsretslige begrænsninger."]]]
 #{{{1 Actual songs
 song "Der sad to katte på et bord", #{{{2
   lyrics: """
