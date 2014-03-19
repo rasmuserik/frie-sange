@@ -49,7 +49,7 @@ execute main
     song = (title, obj) ->
       obj.title = title
       songs[title] = obj
-      console.log songs
+      console.log uu.urlString obj.title
     
 
 # Information page
@@ -134,6 +134,7 @@ execute main
           og tørrede Peters krop.
         Lille Peter Edderkop
           kravlede atter op."""
+    
     song "Mæ siger det lille lam", #{{{2
       lyrics: """
         Mæ, siger det lille lam,
@@ -165,6 +166,7 @@ execute main
         fare om og passe på,
         at de trygt til ro kan gå.
         Vov, siger den store hund. Vov!"""
+    
     song "Ride ride ranke", #{{{2
       author: "Nikloaj Ulrik Krossing (1798-1872)"
       composer: "Johan Christian Gebauer (1808-1884)"
@@ -238,6 +240,7 @@ execute main
         Til i morgen stå i ro,
         havre først: et kys ja to!
         Ride, ride, ranke!"""
+    
     song "Jeg gik mig over sø og land", #{{{2
       lyrics: """
         Jeg gik mig over sø og land,
@@ -292,8 +295,8 @@ execute main
         Jeg har hjemme i trommeland,
         trommeland, trommeland,
         alle de som tromme kan,
-        de har hjemme i trommeland.
-    """
+        de har hjemme i trommeland."""
+    
     song "Mester Jakob", #{{{2
       lyrics: """
         Mester Jakob, 
@@ -304,6 +307,7 @@ execute main
         hører du ej klokken?
         Bim bam bum,
         bim bam bum."""
+    
     song "Oppe i Norge der boede tre trolde", #{{{2
       lyrics: """
         Oppe i Norge, der boede tre trolde,
@@ -335,6 +339,7 @@ execute main
         KRRA sagde kragefar
         Krra sagde kragemor
         og den lille krage-brage sagde bare <small>krra</small>"""
+    
     song "Tommelfinger, tommelfinger hvor er du", #{{{2
       lyrics: """
         Tommelfinger, tommelfinger,
@@ -366,6 +371,7 @@ execute main
         hvor er I?
         Her er vi, her er vi,
         Goddag, goddag, goddag."""
+    
     song "I skoven skulle være gilde", #{{{2
       lyrics: """
         I skoven skulle være gilde
@@ -455,6 +461,7 @@ execute main
         de er nu ganske få,
         at mine levedage,
         de er nu ganske få"."""
+    
     song "Langt ude i skoven", #{{{2
       lyrics: """
         Lange ude i skoven, der lå et lille bjerg,

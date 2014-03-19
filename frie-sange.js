@@ -44,7 +44,7 @@
   song = function(title, obj) {
     obj.title = title;
     songs[title] = obj;
-    return console.log(songs);
+    return console.log(uu.urlString(obj.title));
   };
 
   info = ["div", ""];

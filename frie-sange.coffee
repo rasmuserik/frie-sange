@@ -32,15 +32,57 @@ onReady = (fn) ->
     if document.readystate != "complete" then fn() else setTimeout (-> onReady fn), 17 
 
 # {{{1 code
-uu = require "uutil"
-onReady ->
-  console.log "HERE"
+if isNodeJs
+  uu = require "uutil"
+  fs = require "fs"
 
-songs = {}
-song = (title, obj) ->
-  obj.title = title
-  songs[title] = obj
-  console.log songs
+lyricsJsonml = (song) ->
+  ["div.lyrics"].concat song.lyrics.map (verse) ->
+    ["div.verse"
+      style:
+        margin: "2em"
+        display: "inline-block"
+    ].concat verse.split("\n").map (line) ->
+      ["div.line", ["rawhtml", line]]
+
+html = (title, body) ->
+  "<!DOCTYPE html>" + uu.jsonml2html ["html"
+    ["head"
+      ["title", title]
+      ["meta", {"http-equiv": "Content-Type", content: "text/html;charset=UTF-8"}]
+      ["meta", {"http-equiv": "X-UA-Compatible", content: "IE=edge,chrome=1"}]
+      ["meta"
+        name: "viewport"
+        content: "width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0"]
+      ["style", ["rawhtml", "@font-face{font-family:Ubuntu;font-weight:400;src:url(/font/ubuntu-latin1.ttf) format(truetype);}"]]
+      ["style", "body{font:18px ubuntu,sans-serif}"]
+      ["meta", {name: "format-detection", content: "telephone=no"}]]
+    ["body", body]]
+
+songHTML = (song) -> html song.title, ["div", ["h1", song.title], lyricsJsonml song]
+
+songs = []
+song = (title, song) ->
+  song.title = title
+  song.lyrics = song.lyrics.split "\n\n"
+  song.filename = "#{uu.urlString song.title}.html"
+  songs.push song
+  if isNodeJs
+    fs.writeFile song.filename, songHTML song, "utf8"
+
+if isNodeJs then process.nextTick ->
+  pages = [{title: "Frie Børnesange", filename: "about.html"}].concat songs
+  content = ["div"]
+  for page in pages
+    content.push ["a"
+        href: page.filename
+        style:
+          display: "inline-block"
+      page.title]
+    content.push " "
+
+  fs.writeFile "index.html", html("Frie Børnesange", content), "utf8"
+
 
 #{{{1 Information page
 #
@@ -121,6 +163,7 @@ song "Lille Peter Edderkop", #{{{2
       og tørrede Peters krop.
     Lille Peter Edderkop
       kravlede atter op."""
+
 song "Mæ siger det lille lam", #{{{2
   lyrics: """
     Mæ, siger det lille lam,
@@ -142,7 +185,7 @@ song "Mæ siger det lille lam", #{{{2
     Mjav siger den lille kat. Mjav!
 
     Prr, siger den gamle hest,
-    jeg vil trækk som jeg kan bedst.
+    jeg vil trække som jeg kan bedst.
     Gid jeg stod i min varme stald
     og hørte i dag ej flere knald,
     Prrr siger den gamle hest. Prrr!
@@ -152,6 +195,7 @@ song "Mæ siger det lille lam", #{{{2
     fare om og passe på,
     at de trygt til ro kan gå.
     Vov, siger den store hund. Vov!"""
+
 song "Ride ride ranke", #{{{2
   author: "Nikloaj Ulrik Krossing (1798-1872)"
   composer: "Johan Christian Gebauer (1808-1884)"
@@ -225,6 +269,7 @@ song "Ride ride ranke", #{{{2
     Til i morgen stå i ro,
     havre først: et kys ja to!
     Ride, ride, ranke!"""
+
 song "Jeg gik mig over sø og land", #{{{2
   lyrics: """
     Jeg gik mig over sø og land,
@@ -279,8 +324,8 @@ song "Jeg gik mig over sø og land", #{{{2
     Jeg har hjemme i trommeland,
     trommeland, trommeland,
     alle de som tromme kan,
-    de har hjemme i trommeland.
-"""
+    de har hjemme i trommeland."""
+
 song "Mester Jakob", #{{{2
   lyrics: """
     Mester Jakob, 
@@ -291,6 +336,7 @@ song "Mester Jakob", #{{{2
     hører du ej klokken?
     Bim bam bum,
     bim bam bum."""
+
 song "Oppe i Norge der boede tre trolde", #{{{2
   lyrics: """
     Oppe i Norge, der boede tre trolde,
@@ -322,6 +368,7 @@ song "Oppe i Norge der boede tre trolde", #{{{2
     KRRA sagde kragefar
     Krra sagde kragemor
     og den lille krage-brage sagde bare <small>krra</small>"""
+
 song "Tommelfinger, tommelfinger hvor er du", #{{{2
   lyrics: """
     Tommelfinger, tommelfinger,
@@ -353,6 +400,7 @@ song "Tommelfinger, tommelfinger hvor er du", #{{{2
     hvor er I?
     Her er vi, her er vi,
     Goddag, goddag, goddag."""
+
 song "I skoven skulle være gilde", #{{{2
   lyrics: """
     I skoven skulle være gilde
@@ -442,6 +490,7 @@ song "I skoven skulle være gilde", #{{{2
     de er nu ganske få,
     at mine levedage,
     de er nu ganske få"."""
+
 song "Langt ude i skoven", #{{{2
   lyrics: """
     Lange ude i skoven, der lå et lille bjerg,
