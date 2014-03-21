@@ -43,18 +43,136 @@
     fs = require("fs");
   }
 
-  lyricsJsonml = function(song) {
-    return ["div.lyrics"].concat(song.lyrics.map(function(verse) {
-      return ["div.verse"].concat(verse.split("\n").map(function(line) {
-        return ["div.line", ["rawhtml", line]];
-      }));
-    }));
-  };
-
   style = function() {
+    var arraySum, h, lineWidth, outerMargin, songButton, splitEven, sqCols, sqInner, sqMargin, sqPadding, sqSize, unit, w, _i, _len, _ref;
+    if (isNodeJs) {
+      w = 960;
+      h = 480;
+    } else {
+      w = window.innerWidth;
+      h = window.innerHeight;
+    }
+    unit = Math.sqrt(w * h) / 100;
+    console.log(unit);
+    outerMargin = 2 * unit | 0;
+    w -= outerMargin * 2;
+    h -= outerMargin * 2;
+    lineWidth = unit * .4 | 0;
+    sqSize = (w > h ? Math.min(w / 4, h / 3) : Math.min(w / 3, h / 4)) | 0;
+    sqMargin = unit | 0;
+    sqPadding = unit | 0;
+    sqInner = sqSize - (sqMargin + sqPadding + lineWidth) * 2 - 6;
+    sqCols = w > h ? 4 : 3;
+    if (!isNodeJs) {
+      _ref = document.getElementsByClassName("songButton");
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        songButton = _ref[_i];
+        songButton.style.paddingTop = songButton.style.paddingBottom = "0px";
+      }
+      uu.nextTick(function() {
+        var i, padding, _j, _len1, _ref1, _results;
+        i = 0;
+        _ref1 = document.getElementsByClassName("songButton");
+        _results = [];
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          songButton = _ref1[_j];
+          songButton.style.position = "absolute";
+          songButton.style.top = "" + (outerMargin + sqMargin + sqSize * (i / sqCols | 0)) + "px";
+          songButton.style.left = "" + (outerMargin + sqMargin + sqSize * (i % sqCols | 0)) + "px";
+          padding = (sqSize - songButton.offsetHeight) - 2 * sqMargin;
+          console.log(i, sqSize, songButton.offsetHeight);
+          songButton.style.paddingTop = (padding * .45 | 0) + "px";
+          songButton.style.paddingBottom = (padding * .55 | 0) + "px";
+          _results.push(++i);
+        }
+        return _results;
+      });
+    }
+    arraySum = function(arr) {
+      return arr.reduce(function(a, b) {
+        return a + b;
+      });
+    };
+    splitEven = function(arr, n) {
+      var elem, result, subresult, subtotal, total, _j, _len1;
+      total = arraySum(arr);
+      subtotal = 0;
+      result = [];
+      subresult = [];
+      for (_j = 0, _len1 = arr.length; _j < _len1; _j++) {
+        elem = arr[_j];
+        if ((subtotal + elem) > (total * n)) {
+          if (subresult.length) {
+            result.push(subresult);
+          }
+          subtotal = elem;
+          subresult = [elem];
+        } else {
+          subresult.push(elem);
+          subtotal += elem;
+        }
+      }
+      if (subresult.length) {
+        result.push(subresult);
+      }
+      return result;
+    };
+    if (!isNodeJs) {
+      uu.nextTick(function() {
+        var bestDiff, bestLayout, col, colHeight, cols, heights, i, layout, layoutDiff, layoutHeight, layoutRatio, layoutWidth, ratio, row, scale, top, verse, width, _j, _k, _l, _len1, _len2, _ref1, _ref2, _results;
+        width = 0;
+        heights = [];
+        ratio = w / h;
+        _ref1 = document.getElementsByClassName("verse");
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          verse = _ref1[_j];
+          width = Math.max(width, verse.offsetWidth + 90);
+          heights.push(verse.offsetHeight + 30);
+        }
+        bestDiff = 100;
+        bestLayout = void 0;
+        cols = 0;
+        colHeight = function(verseLengths) {
+          return arraySum(verseLengths);
+        };
+        scale = 0;
+        for (i = _k = 0.05; 0.05 > 0 ? _k <= 1.05 : _k >= 1.05; i = _k += 0.05) {
+          layout = splitEven(heights, i);
+          layoutHeight = Math.max.apply(null, layout.map(colHeight));
+          layoutWidth = width * layout.length;
+          layoutRatio = layoutWidth / layoutHeight;
+          layoutDiff = Math.abs(layoutRatio - ratio);
+          if (layoutDiff < bestDiff) {
+            bestLayout = layout;
+            bestDiff = layoutDiff;
+          }
+        }
+        console.log(bestLayout);
+        row = 0;
+        col = 0;
+        top = 0;
+        _ref2 = document.getElementsByClassName("verse");
+        _results = [];
+        for (_l = 0, _len2 = _ref2.length; _l < _len2; _l++) {
+          verse = _ref2[_l];
+          console.log(row, col);
+          if (!bestLayout[col][row]) {
+            ++col;
+            row = 0;
+            top = 0;
+          }
+          verse.style.position = "absolute";
+          verse.style.top = "" + top + "px";
+          verse.style.left = "" + (col * width) + "px";
+          top += bestLayout[col][row];
+          _results.push(++row);
+        }
+        return _results;
+      });
+    }
     return {
       body: {
-        font: "18px ubuntu,sans-serif",
+        font: "" + (2 * unit | 0) + "px ubuntu,sans-serif",
         lineHeight: "130%"
       },
       ".notes": {
@@ -62,24 +180,48 @@
         marginBottom: "1em"
       },
       ".verse": {
-        margin: "2em",
-        display: "inline-block"
+        fontSize: 20,
+        display: "inline-block",
+        lineHeight: "130%"
       },
       ".songButton": {
         display: "inline-block",
-        width: 200,
-        height: 200,
-        margin: 10,
-        padding: 15,
+        lineHeight: "130%",
+        width: sqInner,
+        margin: 0,
+        paddingLeft: sqPadding,
+        paddingRight: sqPadding,
+        paddingTop: 0,
+        paddingBottom: 0,
         textAlign: "center",
         color: "black",
         textDecoration: "none",
-        fontSize: 30,
-        border: "3px solid black",
-        borderRadius: 25,
+        fontSize: sqSize * .11 | 0,
+        border: "" + lineWidth + "px solid black",
+        borderRadius: unit * 4 | 0,
         verticalAlign: "middle"
       }
     };
+  };
+
+  if (isWindow) {
+    document.ondeviceready = window.onload = window.onresize = function() {
+      var _ref;
+      if ((_ref = navigator.splashscreen) != null) {
+        if (typeof _ref.hide === "function") {
+          _ref.hide();
+        }
+      }
+      return document.getElementById("style").innerHTML = uu.obj2style(style());
+    };
+  }
+
+  lyricsJsonml = function(song) {
+    return ["div.lyrics"].concat(song.lyrics.map(function(verse) {
+      return ["div.verse"].concat(verse.split("\n").map(function(line) {
+        return ["div.line", ["rawhtml", line]];
+      }));
+    }));
   };
 
   html = function(title, body) {
@@ -108,7 +250,7 @@
           "script", {
             src: "frie-sange.js"
           }, ""
-        ], ["style", ["rawhtml", "@font-face{font-family:Ubuntu;font-weight:400;src:url(/font/ubuntu-latin1.ttf) format(truetype);}"]], ["style", ["rawhtml", uu.obj2style(style())]], [
+        ], ["style", ["rawhtml", "@font-face{font-family:Ubuntu;font-weight:400;src:url(/font/ubuntu-latin1.ttf) format(truetype);}"]], ["style#style", ["rawhtml", uu.obj2style(style())]], [
           "meta", {
             name: "format-detection",
             content: "telephone=no"
@@ -119,7 +261,7 @@
   };
 
   songHTML = function(song) {
-    return html(song.title, ["div", ["h1", song.title], lyricsJsonml(song)]);
+    return html(song.title, lyricsJsonml(song));
   };
 
   songs = [];
@@ -149,22 +291,9 @@
         content.push([
           "a.songButton", {
             href: page.filename
-          }, [
-            "div", {
-              style: {
-                display: "table",
-                height: 200
-              }
-            }, [
-              "div", {
-                style: {
-                  display: "table-cell",
-                  verticalAlign: "middle"
-                }
-              }, page.title
-            ]
-          ]
+          }, page.title
         ]);
+        content.push(" ");
       }
       fs.writeFile("index.html", html("Frie Børnesange", content), "utf8");
       return fs.writeFile("about.html", html("Frie Børnesange", info), "utf8");
@@ -238,7 +367,7 @@
   });
 
   song("Langt ude i skoven", {
-    lyrics: "Lange ude i skoven, der lå et lille bjerg,\naldrig så jeg, så dejligt et bjerg:\nBjerget ligger langt ude i skoven.\n\nPå det lille bjerg, der stod et lille træ,\naldrig så jeg så dejligt et træ:\nTræet på bjerget.\nBjerget ligger langt ude i skoven.\n\nPå det lille træ, der sad en lille gren,\naldrig så jeg så dejlig en gren:\nGrenen på træet.\nTræet på bjerget.\nBjerget ligger langt ude i skoven.\n\nPå den lille gren, der sad en lille kvist,\naldrig så jeg så dejlig en kvist:\nKvisten på grenen.\nGrenen på træet.\nTræet på bjerget.\nBjerget ligger langt ude i skoven.\n\nPå den lille kvist, der sad et lille blad,\naldrig så jeg så dejligt et blad:\nBladet på kvisten.\nKvisten på grenen.\nGrenen på træet.\nTræet på bjerget.\nBjerget ligger langt ude i skoven.\n\nPå det lille blad, der var en lille rede,\naldrig så jeg så dejlig en rede:\nReden på bladet.\nBladet på kvisten.\nKvisten på grenen.\nGrenen på træet.\nTræet på bjerget.\nBjerget ligger langt ude i skoven.\n\nI den lille rede var et lille æg,\naldrig så jeg så dejligt et æg:\nÆgget i reden.\nReden på bladet.\nBladet på kvisten.\nKvisten på grenen.\nGrenen på træet.\nTræet på bjerget.\nBjerget ligger langt ude i skoven.\n\nAf det lille æg der kom en lille fugl,\naldrig så jeg så dejlig en fugl:\nFuglen af ægget.\nÆgget i reden.\nReden på bladet.\nBladet på kvisten.\nKvisten på grenen.\nGrenen på træet.\nTræet på bjerget.\nBjerget ligger langt ude i skoven.\n\nPå den lille fugl der sad en lille fjer.\naldrig så jeg så dejlig en fjer:\nFjeren på fuglen.\nFuglen af ægget.\nÆgget i reden.\nReden på bladet.\nBladet på kvisten.\nKvisten på grenen.\nGrenen på træet.\nTræet på bjerget.\nBjerget ligger langt ude i skoven.\n\nAf den lille fjer der blev en lille pude,\naldrig så jeg så dejlig en pude:\nPuden af fjeren.\nFjeren på fuglen.\nFuglen af ægget.\nÆgget i reden.\nReden på bladet.\nBladet på kvisten.\nKvisten på grenen.\nGrenen på træet.\nTræet på bjerget.\nBjerget ligger langt ude i skoven.\n\nPå den lille pude der lå en lille dreng,\naldrig så jeg så dejlig en dreng:\nDrengen på puden.\nPuden af fjeren.\nFjeren på fuglen.\nFuglen af ægget.\nÆgget i reden.\nReden på bladet.\nBladet på kvisten.\nKvisten på grenen.\nGrenen på træet.\nTræet på bjerget.\nBjerget ligger langt ude i skoven."
+    lyrics: "Lange ude i skoven, lå et lille bjerg,\naldrig så jeg, så dejligt et bjerg:\nBjerget ligger langt ude i skoven.\n\nPå det lille bjerg, der stod et lille træ,\naldrig så jeg så dejligt et træ:\nTræet på bjerget.\nBjerget ligger langt ude i skoven.\n\nPå det lille træ, der sad en lille gren,\naldrig så jeg så dejlig en gren:\nGrenen på træet.\nTræet på bjerget.\nBjerget ligger langt ude i skoven.\n\nPå den lille gren, der sad en lille kvist,\naldrig så jeg så dejlig en kvist:\nKvisten på grenen.\nGrenen på træet.\nTræet på bjerget.\nBjerget ligger langt ude i skoven.\n\nPå den lille kvist, der sad et lille blad,\naldrig så jeg så dejligt et blad:\nBladet på kvisten.\nKvisten på grenen.\nGrenen på træet.\nTræet på bjerget.\nBjerget ligger langt ude i skoven.\n\nPå det lille blad, der var en lille rede,\naldrig så jeg så dejlig en rede:\nReden på bladet.\nBladet på kvisten.\nKvisten på grenen.\nGrenen på træet.\nTræet på bjerget.\nBjerget ligger langt ude i skoven.\n\nI den lille rede var et lille æg,\naldrig så jeg så dejligt et æg:\nÆgget i reden.\nReden på bladet.\nBladet på kvisten.\nKvisten på grenen.\nGrenen på træet.\nTræet på bjerget.\nBjerget ligger langt ude i skoven.\n\nAf det lille æg der kom en lille fugl,\naldrig så jeg så dejlig en fugl:\nFuglen af ægget.\nÆgget i reden.\nReden på bladet.\nBladet på kvisten.\nKvisten på grenen.\nGrenen på træet.\nTræet på bjerget.\nBjerget ligger langt ude i skoven.\n\nPå den lille fugl der sad en lille fjer.\naldrig så jeg så dejlig en fjer:\nFjeren på fuglen.\nFuglen af ægget.\nÆgget i reden.\nReden på bladet.\nBladet på kvisten.\nKvisten på grenen.\nGrenen på træet.\nTræet på bjerget.\nBjerget ligger langt ude i skoven.\n\nAf den lille fjer der blev en lille pude,\naldrig så jeg så dejlig en pude:\nPuden af fjeren.\nFjeren på fuglen.\nFuglen af ægget.\nÆgget i reden.\nReden på bladet.\nBladet på kvisten.\nKvisten på grenen.\nGrenen på træet.\nTræet på bjerget.\nBjerget ligger langt ude i skoven.\n\nPå den lille pude der lå en lille dreng,\naldrig så jeg så dejlig en dreng:\nDrengen på puden.\nPuden af fjeren.\nFjeren på fuglen.\nFuglen af ægget.\nÆgget i reden.\nReden på bladet.\nBladet på kvisten.\nKvisten på grenen.\nGrenen på træet.\nTræet på bjerget.\nBjerget ligger langt ude i skoven."
   });
 
 }).call(this);

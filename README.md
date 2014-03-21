@@ -30,6 +30,7 @@ predicates that can be optimised away by uglifyjs
       root.isWindow = (typeof window != "undefined") if typeof isWindow == "undefined"
       root.isPhoneGap = typeof document?.ondeviceready != "undefined" if typeof isPhoneGap == "undefined"
       root.runTest = (if isNodeJs then process.argv[2] == "test" else location.hash.slice(1) == "test") if typeof runTest == "undefined"
+    use = if isWindow then ((module) -> window[module]) else require
     
 
 execute main
@@ -41,20 +42,156 @@ execute main
 
 # code
 
+    uu = use "uutil"
     if isNodeJs
-      uu = require "uutil"
       fs = require "fs"
     
-    lyricsJsonml = (song) ->
+    style = -> #{{{2
+      if isNodeJs
+        w = 960
+        h = 480
+      else
+        w = window.innerWidth
+        h = window.innerHeight
+    
+      unit = Math.sqrt(w*h)/100
+      console.log unit
+    
+      outerMargin = 2 * unit | 0
+      w -= outerMargin * 2
+      h -= outerMargin * 2
+    
+
+### layout of squares
+
+      lineWidth = unit * .4 | 0
+      sqSize = (if w > h then Math.min(w/4, h/3) else Math.min(w/3, h/4)) | 0
+      sqMargin = unit | 0
+      sqPadding = unit | 0
+      sqInner = sqSize - (sqMargin + sqPadding + lineWidth) * 2 - 6
+      sqCols = if w > h then 4 else 3
+      if !isNodeJs
+        songButton.style.paddingTop = songButton.style.paddingBottom = "0px" for songButton in document.getElementsByClassName "songButton"
+        uu.nextTick ->
+          i = 0
+          for songButton in document.getElementsByClassName "songButton"
+            songButton.style.position = "absolute"
+            songButton.style.top = "#{outerMargin + sqMargin + sqSize * (i/sqCols|0)}px"
+            songButton.style.left = "#{outerMargin + sqMargin + sqSize * (i%sqCols|0)}px"
+            padding = (sqSize - songButton.offsetHeight) - 2 * sqMargin
+            console.log i, sqSize, songButton.offsetHeight
+            songButton.style.paddingTop = (padding * .45 | 0) + "px"
+            songButton.style.paddingBottom = (padding * .55 | 0) + "px"
+            ++i
+    
+    
+
+### utility
+
+      arraySum = (arr) -> arr.reduce (a,b) -> a + b
+      splitEven = (arr, n) ->
+        total = arraySum arr
+        subtotal = 0
+        result = []
+        subresult = []
+        for elem in arr
+          if (subtotal + elem) > (total * n)
+            result.push subresult if subresult.length
+            subtotal = elem
+            subresult = [elem]
+          else
+            subresult.push elem
+            subtotal += elem
+        result.push subresult if subresult.length
+        return result
+        
+    
+
+### layout of verses
+
+      if !isNodeJs
+        uu.nextTick ->
+          width = 0
+          heights = []
+          ratio = w / h
+    
+          for verse in document.getElementsByClassName "verse"
+            width = Math.max(width, verse.offsetWidth + 90)
+            heights.push verse.offsetHeight + 30
+    
+
+#### find best ratio
+
+          bestDiff = 100
+          bestLayout = undefined
+          cols = 0
+          colHeight = (verseLengths) -> arraySum verseLengths
+          scale = 0
+          for i in [0.05..1.05] by 0.05
+            layout = splitEven heights, i
+            layoutHeight = Math.max.apply null, layout.map colHeight
+            layoutWidth = width * layout.length
+            layoutRatio = layoutWidth / layoutHeight
+            layoutDiff = Math.abs(layoutRatio - ratio)
+            if layoutDiff < bestDiff
+              bestLayout = layout
+              bestDiff = layoutDiff
+          console.log bestLayout
+    
+
+### lay out the verses
+
+          row = 0
+          col = 0
+          top = 0
+          for verse in document.getElementsByClassName "verse"
+            console.log row, col
+            if !bestLayout[col][row]
+              ++col; row = 0
+              top = 0
+            verse.style.position = "absolute"
+            verse.style.top = "#{top}px"
+            verse.style.left = "#{col * width}px"
+            top += bestLayout[col][row]
+            ++row
+    
+      body: #{{{ final style
+        font: "#{2*unit|0}px ubuntu,sans-serif"
+        lineHeight: "130%"
+      ".notes":
+          marginTop: "1em"
+          marginBottom: "1em"
+      ".verse":
+        fontSize: 20
+        display: "inline-block"
+        lineHeight: "130%"
+      ".songButton":
+        display: "inline-block"
+        lineHeight: "130%"
+        width: sqInner
+        margin: 0
+        paddingLeft: sqPadding
+        paddingRight: sqPadding
+        paddingTop: 0
+        paddingBottom: 0
+        textAlign: "center"
+        color: "black"
+        textDecoration: "none"
+        fontSize: sqSize *.11 | 0
+        border: "#{lineWidth}px solid black"
+        borderRadius: unit * 4 | 0
+        verticalAlign: "middle"
+    
+    if isWindow then document.ondeviceready = window.onload = window.onresize = -> #{{{2
+        navigator.splashscreen?.hide?()
+        document.getElementById("style").innerHTML = uu.obj2style style()
+    
+    lyricsJsonml = (song) -> #{{{2
       ["div.lyrics"].concat song.lyrics.map (verse) ->
-        ["div.verse"
-          style:
-            margin: "2em"
-            display: "inline-block"
-        ].concat verse.split("\n").map (line) ->
+        ["div.verse"].concat verse.split("\n").map (line) ->
           ["div.line", ["rawhtml", line]]
     
-    html = (title, body) ->
+    html = (title, body) -> #{{{2
       "<!DOCTYPE html>" + uu.jsonml2html ["html"
         ["head"
           ["title", title]
@@ -63,24 +200,17 @@ execute main
           ["meta"
             name: "viewport"
             content: "width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0"]
+          ["script", {src: "bower_components/uutil/uutil.js"}, ""]
+          ["script", {src: "frie-sange.js"}, ""]
           ["style", ["rawhtml", "@font-face{font-family:Ubuntu;font-weight:400;src:url(/font/ubuntu-latin1.ttf) format(truetype);}"]]
-          ["style", "
-              body {
-                font:18px ubuntu,sans-serif;
-                line-height: 130%;
-              }
-              .notes {
-                margin-top: 1em;
-                margin-bottom: 1em;
-              }
-            "]
+          ["style#style", ["rawhtml", uu.obj2style style()]]
           ["meta", {name: "format-detection", content: "telephone=no"}]]
         ["body", body]]
     
-    songHTML = (song) -> html song.title, ["div", ["h1", song.title], lyricsJsonml song]
+    songHTML = (song) -> html song.title, lyricsJsonml song #{{{2
     
-    songs = []
-    song = (title, song) ->
+    songs = [] #{{{2
+    song = (title, song) -> #{{{2
       song.title = title
       song.lyrics = song.lyrics.split "\n\n"
       song.filename = "#{uu.urlString song.title}.html"
@@ -88,31 +218,12 @@ execute main
       if isNodeJs
         fs.writeFile song.filename, songHTML song, "utf8"
     
-    if isNodeJs then process.nextTick ->
+    if isNodeJs then process.nextTick -> #{{{2
       pages = [{title: "Frie Børnesange", filename: "about.html"}].concat songs
       content = ["div"]
       for page in pages
-        content.push ["a"
-            href: page.filename
-            style:
-              display: "inline-block"
-              width: 200
-              height: 200
-              margin: 10
-              padding: 15
-              textAlign: "center"
-              color: "black"
-              textDecoration: "none"
-              fontSize: 30
-              border: "3px solid black"
-              borderRadius: 25
-              verticalAlign: "middle"
-
-vertical centering hack
-
-          ["div", { style: { display: "table", height: 200}}
-            ["div", { style: { display: "table-cell", verticalAlign: "middle"}}
-              page.title]]]
+        content.push ["a.songButton",{href: page.filename}, page.title]
+        content.push " "
     
       fs.writeFile "index.html", html("Frie Børnesange", content), "utf8"
     
@@ -551,7 +662,7 @@ vertical centering hack
     
     song "Langt ude i skoven", #{{{2
       lyrics: """
-        Lange ude i skoven, der lå et lille bjerg,
+        Lange ude i skoven, lå et lille bjerg,
         aldrig så jeg, så dejligt et bjerg:
         Bjerget ligger langt ude i skoven.
     
