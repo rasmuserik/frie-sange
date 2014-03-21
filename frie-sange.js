@@ -44,7 +44,7 @@
   }
 
   style = function() {
-    var arraySum, h, lineWidth, lyrics, outerMargin, songButton, splitEven, sqCols, sqInner, sqMargin, sqPadding, sqSize, unit, w, _i, _len, _ref;
+    var arraySum, buttonPadPos, buttonSize, h, lineWidth, lyrics, outerMargin, songButton, splitEven, sqCols, sqInner, sqMargin, sqPadding, sqSize, unit, w, _i, _len, _ref;
     if (isNodeJs) {
       w = 960;
       h = 480;
@@ -56,7 +56,9 @@
     outerMargin = 2 * unit | 0;
     w -= outerMargin * 2;
     h -= outerMargin * 2;
-    lineWidth = unit * .4 | 0;
+    buttonSize = Math.max(4 * unit, 44);
+    buttonPadPos = 0;
+    lineWidth = (unit * .2 + 1) | 0;
     sqSize = (w > h ? Math.min(w / 4, h / 3) : Math.min(w / 3, h / 4)) | 0;
     sqMargin = unit | 0;
     sqPadding = unit | 0;
@@ -176,9 +178,9 @@
           }
           totalWidth = (col + 1) * width + col * colspace;
           lyrics.style.position = "absolute";
-          scale = Math.min(w * .95 / totalWidth, h * .95 / totalHeight);
+          scale = Math.min(w * .95 / totalWidth, (h - buttonSize) * .95 / totalHeight);
           lyrics.style.WebkitTransform = lyrics.style.transform = "scale(" + scale + ")";
-          lyrics.style.top = "" + ((h - totalHeight * scale) / 2) + "px";
+          lyrics.style.top = "" + (((h - buttonSize) - totalHeight * scale) / 2) + "px";
           lyrics.style.left = "" + ((w - totalWidth * scale) / 2) + "px";
           return lyrics.style.color = "black";
         });
@@ -193,10 +195,33 @@
         marginTop: "1em",
         marginBottom: "1em"
       },
+      ".button": {
+        background: "white",
+        display: "inline-block",
+        width: buttonSize,
+        height: buttonSize - buttonPadPos * buttonSize,
+        fontSize: .75 * buttonSize,
+        marginLeft: .1 * buttonSize,
+        marginRight: .1 * buttonSize,
+        marginTop: 0,
+        marginBottom: 0,
+        paddingTop: buttonPadPos * buttonSize,
+        textAlign: "center",
+        lineHeight: 0.9 * buttonSize,
+        border: "" + lineWidth + "px solid black",
+        borderRadius: buttonSize
+      },
       ".verse": {
         fontSize: 20,
         display: "inline-block",
         lineHeight: "130%"
+      },
+      ".menu": {
+        position: "absolute",
+        top: (h - buttonSize * 1.1) | 0,
+        textAlign: "center",
+        width: "100%",
+        left: 0
       },
       ".songButton": {
         display: "inline-block",
@@ -212,7 +237,7 @@
         textDecoration: "none",
         fontSize: sqSize * .11 | 0,
         border: "" + lineWidth + "px solid black",
-        borderRadius: unit * 4 | 0,
+        borderRadius: sqSize * .15 | 0,
         verticalAlign: "middle"
       }
     };
@@ -275,7 +300,15 @@
   };
 
   songHTML = function(song) {
-    return html(song.title, lyricsJsonml(song));
+    return html(song.title, [
+      "div", lyricsJsonml(song), [
+        "div.menu", {
+          style: {
+            fontSize: 100
+          }
+        }, ["span.button", "<"], ["span.button", "···"], ["span.button", ">"]
+      ]
+    ]);
   };
 
   songs = [];

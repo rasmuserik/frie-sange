@@ -60,10 +60,13 @@ execute main
       w -= outerMargin * 2
       h -= outerMargin * 2
     
+      buttonSize = Math.max(4 * unit, 44)
+      buttonPadPos = 0
+    
 
 ### layout of squares
 
-      lineWidth = unit * .4 | 0
+      lineWidth = (unit * .2 + 1) | 0
       sqSize = (if w > h then Math.min(w/4, h/3) else Math.min(w/3, h/4)) | 0
       sqMargin = unit | 0
       sqPadding = unit | 0
@@ -164,22 +167,45 @@ execute main
 #### 
 
           lyrics.style.position = "absolute"
-          scale = Math.min(w *.95 / totalWidth, h *.95 / totalHeight)
+          scale = Math.min(w *.95 / totalWidth, (h - buttonSize) *.95 / (totalHeight))
           lyrics.style.WebkitTransform = lyrics.style.transform = "scale(#{scale})"
-          lyrics.style.top = "#{(h-totalHeight*scale)/2}px"
+          lyrics.style.top = "#{((h - buttonSize)-totalHeight*scale)/2}px"
           lyrics.style.left = "#{(w-totalWidth*scale)/2}px"
           lyrics.style.color = "black"
-    
-      body: #{{{ final style
+
+### final style
+
+      body:
         font: "#{2*unit|0}px ubuntu,sans-serif"
         lineHeight: "130%"
       ".notes":
           marginTop: "1em"
           marginBottom: "1em"
+      ".button":
+        background: "white"
+        display: "inline-block"
+        width: buttonSize
+        height: buttonSize - buttonPadPos*buttonSize
+        fontSize: .75 * buttonSize
+        marginLeft: .1 * buttonSize
+        marginRight: .1 * buttonSize
+        marginTop: 0
+        marginBottom: 0
+        paddingTop: buttonPadPos * buttonSize
+        textAlign: "center"
+        lineHeight: 0.9 * buttonSize
+        border: "#{lineWidth}px solid black"
+        borderRadius: buttonSize
       ".verse":
         fontSize: 20
         display: "inline-block"
         lineHeight: "130%"
+      ".menu":
+        position: "absolute"
+        top: (h - buttonSize * 1.1) | 0
+        textAlign: "center"
+        width: "100%"
+        left: 0
       ".songButton":
         display: "inline-block"
         lineHeight: "130%"
@@ -194,7 +220,7 @@ execute main
         textDecoration: "none"
         fontSize: sqSize *.11 | 0
         border: "#{lineWidth}px solid black"
-        borderRadius: unit * 4 | 0
+        borderRadius: sqSize * .15 | 0
         verticalAlign: "middle"
     
     if isWindow then document.ondeviceready = window.onload = window.onresize = -> #{{{2
@@ -222,7 +248,15 @@ execute main
           ["meta", {name: "format-detection", content: "telephone=no"}]]
         ["body", body]]
     
-    songHTML = (song) -> html song.title, lyricsJsonml song #{{{2
+    songHTML = (song) -> html song.title, ["div" #{{{2
+      lyricsJsonml song
+      ["div.menu"
+          style:
+            fontSize: 100
+        ["span.button", "<"]
+        ["span.button", "···"]
+        ["span.button", ">"]]]
+    
     
     songs = [] #{{{2
     song = (title, song) -> #{{{2
