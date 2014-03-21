@@ -379,7 +379,7 @@
       button = _ref[_i];
       console.log(button);
       uu.domListen(button, "mousedown touchstart", function() {
-        return location.href = button.href;
+        return location.href = this.href;
       });
     }
     fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0];

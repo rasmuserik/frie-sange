@@ -266,7 +266,8 @@ if isWindow
 uu.onComplete listenVerse = -> #{{{2 event handlers
   for button in document.getElementsByClassName "songButton"
     console.log button
-    uu.domListen button, "mousedown touchstart", -> location.href = button.href
+    uu.domListen button, "mousedown touchstart", -> location.href = this.href
+
   fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0]
   for song in songs
     break if song.filename == fname
@@ -288,8 +289,6 @@ uu.onComplete listenVerse = -> #{{{2 event handlers
 songHTML = (song) -> #{{{2
   html song.title, ["div", lyricsJsonml(song), navigation(song)]
 #{{{2
-
-
 
 songs = [] #{{{2
 song = (title, song) -> #{{{2
