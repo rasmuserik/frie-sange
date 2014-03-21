@@ -241,21 +241,30 @@ navigation = (song) -> #{{{2
 listenVerse = undefined
 
 if isWindow
-  window.gotoVerse = (n) -> #{{{2
-    uu.log "gotoVerse", n
+  gotoVerse = (n) -> #{{{2
+    fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0]
+
     for song in songs
-      break if song.filename == location.href.split("/").slice(-1)[0]
-    if n == -1
+      break if song.filename == fname
+    return if !song or song.lyrics.length == 1
+
+    uu.log "gotoVerse", n
+
+    if (n == -1) || (n >= song.lyrics.length)
       document.body.innerHTML = uu.jsonml2html ["div", lyricsJsonml(song), navigation(song)]
       listenVerse()
     else
       document.body.innerHTML = uu.jsonml2html ["div", lyricsJsonml({lyrics:[song.lyrics[n]]}), navigation(song)]
-      document.getElementById("up").href = "javascript:gotoVerse(-1)"
-      document.getElementById("prev").href = "javascript:gotoVerse(#{(song.lyrics.length + n - 1) % song.lyrics.length})"
-      document.getElementById("next").href = "javascript:gotoVerse(#{(n + 1) % song.lyrics.length})"
+      bind = (id, fn) ->
+        elem = document.getElementById(id)
+        elem.href = "#"
+        uu.domListen elem, "mousedown touchstart", fn
+
+      bind "up", -> gotoVerse -1
+      bind "prev", -> gotoVerse +n - 1
+      bind "next", -> gotoVerse +n + 1
 
     document.getElementById("style").innerHTML = uu.obj2style style()
-
     false
   
 uu.onComplete listenVerse = -> #{{{2 event handlers

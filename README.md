@@ -177,13 +177,15 @@ execute main
 
       body:
         font: "#{2*unit|0}px ubuntu,sans-serif"
-        lineHeight: "130%"
+        lineHeight: "150%"
       ".notes":
           marginTop: "1em"
           marginBottom: "1em"
       ".button":
         background: "white"
         display: "inline-block"
+        color: "black"
+        textDecoration: "none"
         width: buttonSize
         height: buttonSize - buttonPadPos*buttonSize
         fontSize: .75 * buttonSize
@@ -199,7 +201,7 @@ execute main
       ".verse":
         fontSize: 20
         display: "inline-block"
-        lineHeight: "130%"
+        lineHeight: "150%"
       ".menu":
         position: "absolute"
         top: (h - buttonSize * 1.1) | 0
@@ -208,7 +210,7 @@ execute main
         left: 0
       ".songButton":
         display: "inline-block"
-        lineHeight: "130%"
+        lineHeight: "150%"
         width: sqInner
         margin: 0
         color: "black"
@@ -228,8 +230,9 @@ execute main
         document.getElementById("style").innerHTML = uu.obj2style style()
     
     lyricsJsonml = (song) -> #{{{2
+      verseNo = 0
       ["div.lyrics"].concat song.lyrics.map (verse) ->
-        ["div.verse"].concat verse.split("\n").map (line) ->
+        ["div.verse", {"data-number": verseNo++}].concat verse.split("\n").map (line) ->
           ["div.line", ["rawhtml", line]]
     
     html = (title, body) -> #{{{2
@@ -248,14 +251,58 @@ execute main
           ["meta", {name: "format-detection", content: "telephone=no"}]]
         ["body", body]]
     
-    songHTML = (song) -> html song.title, ["div" #{{{2
-      lyricsJsonml song
+    navigation = (song) -> #{{{2
+      songIdx = songs.indexOf song
+      console.log songIdx, (songIdx - 1) % songs.length
       ["div.menu"
           style:
             fontSize: 100
-        ["span.button", "<"]
-        ["span.button", "···"]
-        ["span.button", ">"]]]
+        ["a.button#prev", {href: songs[(songs.length + songIdx - 1) % songs.length].filename}, "<"]
+        ["a.button#up", {href: "index.html"}, "···"]
+        ["a.button#next", {href: songs[(songIdx + 1) % songs.length].filename}, ">"]]
+    
+    listenVerse = undefined
+    
+    if isWindow
+      gotoVerse = (n) -> #{{{2
+        fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0]
+    
+        for song in songs
+          break if song.filename == fname
+        return if !song or song.lyrics.length == 1
+    
+        uu.log "gotoVerse", n
+    
+        if (n == -1) || (n >= song.lyrics.length)
+          document.body.innerHTML = uu.jsonml2html ["div", lyricsJsonml(song), navigation(song)]
+          listenVerse()
+        else
+          document.body.innerHTML = uu.jsonml2html ["div", lyricsJsonml({lyrics:[song.lyrics[n]]}), navigation(song)]
+          bind = (id, fn) ->
+            elem = document.getElementById(id)
+            elem.href = "#"
+            uu.domListen elem, "mousedown touchstart", fn
+    
+          bind "up", -> gotoVerse -1
+          bind "prev", -> gotoVerse +n - 1
+          bind "next", -> gotoVerse +n + 1
+    
+        document.getElementById("style").innerHTML = uu.obj2style style()
+        false
+      
+    uu.onComplete listenVerse = -> #{{{2 event handlers
+      for verse in document.getElementsByClassName "verse"
+        uu.domListen verse, "click", (e) ->
+          gotoVerse this.dataset.number
+    
+    
+    
+    songHTML = (song) -> #{{{2
+      html song.title, ["div", lyricsJsonml(song), navigation(song)]
+
+## 
+
+    
     
     
     songs = [] #{{{2
@@ -264,7 +311,7 @@ execute main
       song.lyrics = song.lyrics.split "\n\n"
       song.filename = "#{uu.urlString song.title}.html"
       songs.push song
-      if isNodeJs
+      if isNodeJs then uu.nextTick ->
         fs.writeFile song.filename, songHTML song, "utf8"
     
     if isNodeJs then process.nextTick -> #{{{2
