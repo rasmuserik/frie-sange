@@ -109,7 +109,9 @@ execute main
 
       if !isNodeJs
         lyrics = document.getElementsByClassName("lyrics")[0]
-        lyrics.style.WebkitTransform = lyrics.style.transform = "none" if lyrics
+        if lyrics
+          lyrics.style.color = "white"
+          lyrics.style.WebkitTransform = lyrics.style.transform = "none" if lyrics
         if lyrics then uu.nextTick ->
           width = 0
           heights = []
@@ -166,6 +168,7 @@ execute main
           lyrics.style.WebkitTransform = lyrics.style.transform = "scale(#{scale})"
           lyrics.style.top = "#{(h-totalHeight*scale)/2}px"
           lyrics.style.left = "#{(w-totalWidth*scale)/2}px"
+          lyrics.style.color = "black"
     
       body: #{{{ final style
         font: "#{2*unit|0}px ubuntu,sans-serif"
@@ -182,12 +185,12 @@ execute main
         lineHeight: "130%"
         width: sqInner
         margin: 0
+        color: "black"
         paddingLeft: sqPadding
         paddingRight: sqPadding
         paddingTop: 0
         paddingBottom: 0
         textAlign: "center"
-        color: "black"
         textDecoration: "none"
         fontSize: sqSize *.11 | 0
         border: "#{lineWidth}px solid black"
