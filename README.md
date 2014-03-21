@@ -55,7 +55,6 @@ execute main
         h = window.innerHeight
     
       unit = Math.sqrt(w*h)/100
-      console.log unit
     
       outerMargin = 2 * unit | 0
       w -= outerMargin * 2
@@ -79,7 +78,6 @@ execute main
             songButton.style.top = "#{outerMargin + sqMargin + sqSize * (i/sqCols|0)}px"
             songButton.style.left = "#{outerMargin + sqMargin + sqSize * (i%sqCols|0)}px"
             padding = (sqSize - songButton.offsetHeight) - 2 * sqMargin
-            console.log i, sqSize, songButton.offsetHeight
             songButton.style.paddingTop = (padding * .45 | 0) + "px"
             songButton.style.paddingBottom = (padding * .55 | 0) + "px"
             ++i
@@ -110,21 +108,25 @@ execute main
 ### layout of verses
 
       if !isNodeJs
-        uu.nextTick ->
+        lyrics = document.getElementsByClassName("lyrics")[0]
+        lyrics.style.WebkitTransform = lyrics.style.transform = "none" if lyrics
+        if lyrics then uu.nextTick ->
           width = 0
           heights = []
           ratio = w / h
     
+          colspace = 90
+    
           for verse in document.getElementsByClassName "verse"
-            width = Math.max(width, verse.offsetWidth + 90)
+            width = Math.max(width, verse.offsetWidth)
             heights.push verse.offsetHeight + 30
+          console.log heights, width
     
 
 #### find best ratio
 
           bestDiff = 100
           bestLayout = undefined
-          cols = 0
           colHeight = (verseLengths) -> arraySum verseLengths
           scale = 0
           for i in [0.05..1.05] by 0.05
@@ -136,24 +138,34 @@ execute main
             if layoutDiff < bestDiff
               bestLayout = layout
               bestDiff = layoutDiff
-          console.log bestLayout
     
 
-### lay out the verses
+#### lay out the verses
 
           row = 0
           col = 0
           top = 0
+          totalHeight = 0
           for verse in document.getElementsByClassName "verse"
-            console.log row, col
             if !bestLayout[col][row]
               ++col; row = 0
               top = 0
             verse.style.position = "absolute"
+            verse.style.width = "#{width}px"
             verse.style.top = "#{top}px"
-            verse.style.left = "#{col * width}px"
+            verse.style.left = "#{col * (width + colspace)}px"
             top += bestLayout[col][row]
+            totalHeight = Math.max(totalHeight, top)
             ++row
+          totalWidth = (col+1) * width + col * colspace
+
+#### 
+
+          lyrics.style.position = "absolute"
+          scale = Math.min(w *.95 / totalWidth, h *.95 / totalHeight)
+          lyrics.style.WebkitTransform = lyrics.style.transform = "scale(#{scale})"
+          lyrics.style.top = "#{(h-totalHeight*scale)/2}px"
+          lyrics.style.left = "#{(w-totalWidth*scale)/2}px"
     
       body: #{{{ final style
         font: "#{2*unit|0}px ubuntu,sans-serif"
