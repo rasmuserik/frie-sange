@@ -44,7 +44,7 @@
   }
 
   style = function() {
-    var arraySum, h, lineWidth, outerMargin, songButton, splitEven, sqCols, sqInner, sqMargin, sqPadding, sqSize, unit, w, _i, _len, _ref;
+    var arraySum, h, lineWidth, lyrics, outerMargin, songButton, splitEven, sqCols, sqInner, sqMargin, sqPadding, sqSize, unit, w, _i, _len, _ref;
     if (isNodeJs) {
       w = 960;
       h = 480;
@@ -53,7 +53,6 @@
       h = window.innerHeight;
     }
     unit = Math.sqrt(w * h) / 100;
-    console.log(unit);
     outerMargin = 2 * unit | 0;
     w -= outerMargin * 2;
     h -= outerMargin * 2;
@@ -80,7 +79,6 @@
           songButton.style.top = "" + (outerMargin + sqMargin + sqSize * (i / sqCols | 0)) + "px";
           songButton.style.left = "" + (outerMargin + sqMargin + sqSize * (i % sqCols | 0)) + "px";
           padding = (sqSize - songButton.offsetHeight) - 2 * sqMargin;
-          console.log(i, sqSize, songButton.offsetHeight);
           songButton.style.paddingTop = (padding * .45 | 0) + "px";
           songButton.style.paddingBottom = (padding * .55 | 0) + "px";
           _results.push(++i);
@@ -118,57 +116,69 @@
       return result;
     };
     if (!isNodeJs) {
-      uu.nextTick(function() {
-        var bestDiff, bestLayout, col, colHeight, cols, heights, i, layout, layoutDiff, layoutHeight, layoutRatio, layoutWidth, ratio, row, scale, top, verse, width, _j, _k, _l, _len1, _len2, _ref1, _ref2, _results;
-        width = 0;
-        heights = [];
-        ratio = w / h;
-        _ref1 = document.getElementsByClassName("verse");
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          verse = _ref1[_j];
-          width = Math.max(width, verse.offsetWidth + 90);
-          heights.push(verse.offsetHeight + 30);
-        }
-        bestDiff = 100;
-        bestLayout = void 0;
-        cols = 0;
-        colHeight = function(verseLengths) {
-          return arraySum(verseLengths);
-        };
-        scale = 0;
-        for (i = _k = 0.05; 0.05 > 0 ? _k <= 1.05 : _k >= 1.05; i = _k += 0.05) {
-          layout = splitEven(heights, i);
-          layoutHeight = Math.max.apply(null, layout.map(colHeight));
-          layoutWidth = width * layout.length;
-          layoutRatio = layoutWidth / layoutHeight;
-          layoutDiff = Math.abs(layoutRatio - ratio);
-          if (layoutDiff < bestDiff) {
-            bestLayout = layout;
-            bestDiff = layoutDiff;
+      lyrics = document.getElementsByClassName("lyrics")[0];
+      if (lyrics) {
+        lyrics.style.WebkitTransform = lyrics.style.transform = "none";
+      }
+      if (lyrics) {
+        uu.nextTick(function() {
+          var bestDiff, bestLayout, col, colHeight, colspace, heights, i, layout, layoutDiff, layoutHeight, layoutRatio, layoutWidth, ratio, row, scale, top, totalHeight, totalWidth, verse, width, _j, _k, _l, _len1, _len2, _ref1, _ref2;
+          width = 0;
+          heights = [];
+          ratio = w / h;
+          colspace = 90;
+          _ref1 = document.getElementsByClassName("verse");
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            verse = _ref1[_j];
+            width = Math.max(width, verse.offsetWidth);
+            heights.push(verse.offsetHeight + 30);
           }
-        }
-        console.log(bestLayout);
-        row = 0;
-        col = 0;
-        top = 0;
-        _ref2 = document.getElementsByClassName("verse");
-        _results = [];
-        for (_l = 0, _len2 = _ref2.length; _l < _len2; _l++) {
-          verse = _ref2[_l];
-          console.log(row, col);
-          if (!bestLayout[col][row]) {
-            ++col;
-            row = 0;
-            top = 0;
+          console.log(heights, width);
+          bestDiff = 100;
+          bestLayout = void 0;
+          colHeight = function(verseLengths) {
+            return arraySum(verseLengths);
+          };
+          scale = 0;
+          for (i = _k = 0.05; 0.05 > 0 ? _k <= 1.05 : _k >= 1.05; i = _k += 0.05) {
+            layout = splitEven(heights, i);
+            layoutHeight = Math.max.apply(null, layout.map(colHeight));
+            layoutWidth = width * layout.length;
+            layoutRatio = layoutWidth / layoutHeight;
+            layoutDiff = Math.abs(layoutRatio - ratio);
+            if (layoutDiff < bestDiff) {
+              bestLayout = layout;
+              bestDiff = layoutDiff;
+            }
           }
-          verse.style.position = "absolute";
-          verse.style.top = "" + top + "px";
-          verse.style.left = "" + (col * width) + "px";
-          top += bestLayout[col][row];
-          _results.push(++row);
-        }
-        return _results;
-      });
+          row = 0;
+          col = 0;
+          top = 0;
+          totalHeight = 0;
+          _ref2 = document.getElementsByClassName("verse");
+          for (_l = 0, _len2 = _ref2.length; _l < _len2; _l++) {
+            verse = _ref2[_l];
+            if (!bestLayout[col][row]) {
+              ++col;
+              row = 0;
+              top = 0;
+            }
+            verse.style.position = "absolute";
+            verse.style.width = "" + width + "px";
+            verse.style.top = "" + top + "px";
+            verse.style.left = "" + (col * (width + colspace)) + "px";
+            top += bestLayout[col][row];
+            totalHeight = Math.max(totalHeight, top);
+            ++row;
+          }
+          totalWidth = (col + 1) * width + col * colspace;
+          lyrics.style.position = "absolute";
+          scale = Math.min(w * .95 / totalWidth, h * .95 / totalHeight);
+          lyrics.style.WebkitTransform = lyrics.style.transform = "scale(" + scale + ")";
+          lyrics.style.top = "" + ((h - totalHeight * scale) / 2) + "px";
+          return lyrics.style.left = "" + ((w - totalWidth * scale) / 2) + "px";
+        });
+      }
     }
     return {
       body: {
