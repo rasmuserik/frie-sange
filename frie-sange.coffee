@@ -25,6 +25,7 @@ if typeof isNodeJs == "undefined" or typeof runTest == "undefined" then do ->
   root.isWindow = (typeof window != "undefined") if typeof isWindow == "undefined"
   root.isPhoneGap = typeof document?.ondeviceready != "undefined" if typeof isPhoneGap == "undefined"
   root.runTest = (if isNodeJs then process.argv[2] == "test" else location.hash.slice(1) == "test") if typeof runTest == "undefined"
+use = if isWindow then ((module) -> window[module]) else require
 
 # execute main
 onReady = (fn) ->
@@ -32,18 +33,38 @@ onReady = (fn) ->
     if document.readystate != "complete" then fn() else setTimeout (-> onReady fn), 17 
 
 # {{{1 code
+uu = use "uutil"
 if isNodeJs
-  uu = require "uutil"
   fs = require "fs"
 
 lyricsJsonml = (song) ->
   ["div.lyrics"].concat song.lyrics.map (verse) ->
-    ["div.verse"
-      style:
-        margin: "2em"
-        display: "inline-block"
-    ].concat verse.split("\n").map (line) ->
+    ["div.verse"].concat verse.split("\n").map (line) ->
       ["div.line", ["rawhtml", line]]
+
+style = ->
+  body:
+    font: "18px ubuntu,sans-serif"
+    lineHeight: "130%"
+  ".notes":
+      marginTop: "1em"
+      marginBottom: "1em"
+  ".verse":
+    margin: "2em"
+    display: "inline-block"
+  ".songButton":
+    display: "inline-block"
+    width: 200
+    height: 200
+    margin: 10
+    padding: 15
+    textAlign: "center"
+    color: "black"
+    textDecoration: "none"
+    fontSize: 30
+    border: "3px solid black"
+    borderRadius: 25
+    verticalAlign: "middle"
 
 html = (title, body) ->
   "<!DOCTYPE html>" + uu.jsonml2html ["html"
@@ -54,17 +75,10 @@ html = (title, body) ->
       ["meta"
         name: "viewport"
         content: "width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0"]
+      ["script", {src: "bower_components/uutil/uutil.js"}, ""]
+      ["script", {src: "frie-sange.js"}, ""]
       ["style", ["rawhtml", "@font-face{font-family:Ubuntu;font-weight:400;src:url(/font/ubuntu-latin1.ttf) format(truetype);}"]]
-      ["style", "
-          body {
-            font:18px ubuntu,sans-serif;
-            line-height: 130%;
-          }
-          .notes {
-            margin-top: 1em;
-            margin-bottom: 1em;
-          }
-        "]
+      ["style", ["rawhtml", uu.obj2style style()]]
       ["meta", {name: "format-detection", content: "telephone=no"}]]
     ["body", body]]
 
@@ -83,21 +97,8 @@ if isNodeJs then process.nextTick ->
   pages = [{title: "Frie Børnesange", filename: "about.html"}].concat songs
   content = ["div"]
   for page in pages
-    content.push ["a"
+    content.push ["a.songButton"
         href: page.filename
-        style:
-          display: "inline-block"
-          width: 200
-          height: 200
-          margin: 10
-          padding: 15
-          textAlign: "center"
-          color: "black"
-          textDecoration: "none"
-          fontSize: 30
-          border: "3px solid black"
-          borderRadius: 25
-          verticalAlign: "middle"
       # vertical centering hack
       ["div", { style: { display: "table", height: 200}}
         ["div", { style: { display: "table-cell", verticalAlign: "middle"}}
