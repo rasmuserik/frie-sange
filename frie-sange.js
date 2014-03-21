@@ -118,7 +118,10 @@
     if (!isNodeJs) {
       lyrics = document.getElementsByClassName("lyrics")[0];
       if (lyrics) {
-        lyrics.style.WebkitTransform = lyrics.style.transform = "none";
+        lyrics.style.color = "white";
+        if (lyrics) {
+          lyrics.style.WebkitTransform = lyrics.style.transform = "none";
+        }
       }
       if (lyrics) {
         uu.nextTick(function() {
@@ -176,7 +179,8 @@
           scale = Math.min(w * .95 / totalWidth, h * .95 / totalHeight);
           lyrics.style.WebkitTransform = lyrics.style.transform = "scale(" + scale + ")";
           lyrics.style.top = "" + ((h - totalHeight * scale) / 2) + "px";
-          return lyrics.style.left = "" + ((w - totalWidth * scale) / 2) + "px";
+          lyrics.style.left = "" + ((w - totalWidth * scale) / 2) + "px";
+          return lyrics.style.color = "black";
         });
       }
     }
@@ -199,12 +203,12 @@
         lineHeight: "130%",
         width: sqInner,
         margin: 0,
+        color: "black",
         paddingLeft: sqPadding,
         paddingRight: sqPadding,
         paddingTop: 0,
         paddingBottom: 0,
         textAlign: "center",
-        color: "black",
         textDecoration: "none",
         fontSize: sqSize * .11 | 0,
         border: "" + lineWidth + "px solid black",
