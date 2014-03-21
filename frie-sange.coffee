@@ -225,27 +225,35 @@ html = (title, body) -> #{{{2
       ["meta", {name: "format-detection", content: "telephone=no"}]]
     ["body", body]]
 
-songHTML = (song) -> html song.title, ["div" #{{{2
-  lyricsJsonml song
-  ["div.menu"
+navigation = ["div.menu" #{{{2
       style:
         fontSize: 100
-    ["span.button", "<"]
-    ["span.button", "···"]
-    ["span.button", ">"]]]
+    ["span.button#prev", "<"]
+    ["span.button#mainMenu", "···"]
+    ["span.button#next", ">"]]
+
+uu.onComplete ->
+  console.log document.getElementById("mainMenu")
+  uu.domListen document.getElementById("mainMenu"), "click mousedown touchstart", -> location.href = "index.html"
 
 
-songs = [] #{{{2
+songHTML = (song) ->
+  html song.title, ["div", lyricsJsonml(song), navigation]
+#{{{2
+
+
+
+songs = {} #{{{2
 song = (title, song) -> #{{{2
   song.title = title
   song.lyrics = song.lyrics.split "\n\n"
   song.filename = "#{uu.urlString song.title}.html"
-  songs.push song
+  songs[song.filename] =  song
   if isNodeJs
     fs.writeFile song.filename, songHTML song, "utf8"
 
 if isNodeJs then process.nextTick -> #{{{2
-  pages = [{title: "Frie Børnesange", filename: "about.html"}].concat songs
+  pages = [{title: "Frie Børnesange", filename: "about.html"}].concat (song for _, song of songs)
   content = ["div"]
   for page in pages
     content.push ["a.songButton",{href: page.filename}, page.title]

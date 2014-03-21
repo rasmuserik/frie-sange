@@ -7,6 +7,6 @@
     "url": "https://github.com/rasmuserik/frie-sange.git"
   },
   "dependencies": {
-    "uutil": "~0.0.8"
+    "uutil": "~0.0.10"
   }
 }
