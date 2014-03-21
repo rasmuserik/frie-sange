@@ -154,13 +154,15 @@ style = -> #{{{2
   #{{{3 final style
   body:
     font: "#{2*unit|0}px ubuntu,sans-serif"
-    lineHeight: "130%"
+    lineHeight: "150%"
   ".notes":
       marginTop: "1em"
       marginBottom: "1em"
   ".button":
     background: "white"
     display: "inline-block"
+    color: "black"
+    textDecoration: "none"
     width: buttonSize
     height: buttonSize - buttonPadPos*buttonSize
     fontSize: .75 * buttonSize
@@ -176,7 +178,7 @@ style = -> #{{{2
   ".verse":
     fontSize: 20
     display: "inline-block"
-    lineHeight: "130%"
+    lineHeight: "150%"
   ".menu":
     position: "absolute"
     top: (h - buttonSize * 1.1) | 0
@@ -185,7 +187,7 @@ style = -> #{{{2
     left: 0
   ".songButton":
     display: "inline-block"
-    lineHeight: "130%"
+    lineHeight: "150%"
     width: sqInner
     margin: 0
     color: "black"
@@ -205,8 +207,9 @@ if isWindow then document.ondeviceready = window.onload = window.onresize = -> #
     document.getElementById("style").innerHTML = uu.obj2style style()
 
 lyricsJsonml = (song) -> #{{{2
+  verseNo = 0
   ["div.lyrics"].concat song.lyrics.map (verse) ->
-    ["div.verse"].concat verse.split("\n").map (line) ->
+    ["div.verse", {"data-number": verseNo++}].concat verse.split("\n").map (line) ->
       ["div.line", ["rawhtml", line]]
 
 html = (title, body) -> #{{{2
@@ -225,35 +228,60 @@ html = (title, body) -> #{{{2
       ["meta", {name: "format-detection", content: "telephone=no"}]]
     ["body", body]]
 
-navigation = ["div.menu" #{{{2
+navigation = (song) -> #{{{2
+  songIdx = songs.indexOf song
+  console.log songIdx, (songIdx - 1) % songs.length
+  ["div.menu"
       style:
         fontSize: 100
-    ["span.button#prev", "<"]
-    ["span.button#mainMenu", "···"]
-    ["span.button#next", ">"]]
+    ["a.button#prev", {href: songs[(songs.length + songIdx - 1) % songs.length].filename}, "<"]
+    ["a.button#up", {href: "index.html"}, "···"]
+    ["a.button#next", {href: songs[(songIdx + 1) % songs.length].filename}, ">"]]
 
-uu.onComplete ->
-  console.log document.getElementById("mainMenu")
-  uu.domListen document.getElementById("mainMenu"), "click mousedown touchstart", -> location.href = "index.html"
+listenVerse = undefined
+
+if isWindow
+  window.gotoVerse = (n) -> #{{{2
+    uu.log "gotoVerse", n
+    for song in songs
+      break if song.filename == location.href.split("/").slice(-1)[0]
+    if n == -1
+      document.body.innerHTML = uu.jsonml2html ["div", lyricsJsonml(song), navigation(song)]
+      listenVerse()
+    else
+      document.body.innerHTML = uu.jsonml2html ["div", lyricsJsonml({lyrics:[song.lyrics[n]]}), navigation(song)]
+      document.getElementById("up").href = "javascript:gotoVerse(-1)"
+      document.getElementById("prev").href = "javascript:gotoVerse(#{(song.lyrics.length + n - 1) % song.lyrics.length})"
+      document.getElementById("next").href = "javascript:gotoVerse(#{(n + 1) % song.lyrics.length})"
+
+    document.getElementById("style").innerHTML = uu.obj2style style()
+
+    false
+  
+uu.onComplete listenVerse = -> #{{{2 event handlers
+  for verse in document.getElementsByClassName "verse"
+    uu.domListen verse, "click", (e) ->
+      gotoVerse this.dataset.number
 
 
-songHTML = (song) ->
-  html song.title, ["div", lyricsJsonml(song), navigation]
+
+songHTML = (song) -> #{{{2
+  html song.title, ["div", lyricsJsonml(song), navigation(song)]
 #{{{2
 
 
 
-songs = {} #{{{2
+songs = [] #{{{2
 song = (title, song) -> #{{{2
   song.title = title
   song.lyrics = song.lyrics.split "\n\n"
   song.filename = "#{uu.urlString song.title}.html"
-  songs[song.filename] =  song
-  if isNodeJs
+  songs.push song
+  if isNodeJs then uu.nextTick ->
     fs.writeFile song.filename, songHTML song, "utf8"
 
 if isNodeJs then process.nextTick -> #{{{2
-  pages = [{title: "Frie Børnesange", filename: "about.html"}].concat (song for _, song of songs)
+  pages = [{title: "Frie Børnesange", filename: "about.html"}].concat songs
   content = ["div"]
   for page in pages
     content.push ["a.songButton",{href: page.filename}, page.title]
