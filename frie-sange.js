@@ -317,15 +317,15 @@
           fontSize: 100
         }
       }, [
-        "a.button#prev", {
+        "span.button#prev", {
           href: songs[(songs.length + songIdx - 1) % songs.length].filename
         }, "<"
       ], [
-        "a.button#up", {
+        "span.button#up", {
           href: "index.html"
         }, "···"
       ], [
-        "a.button#next", {
+        "span.button#next", {
           href: songs[(songIdx + 1) % songs.length].filename
         }, ">"
       ]
@@ -336,7 +336,7 @@
 
   if (isWindow) {
     gotoVerse = function(n) {
-      var bind, fname, song, _i, _len;
+      var fname, song, _i, _len;
       fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0];
       for (_i = 0, _len = songs.length; _i < _len; _i++) {
         song = songs[_i];
@@ -357,19 +357,13 @@
             lyrics: [song.lyrics[n]]
           }), navigation(song)
         ]);
-        bind = function(id, fn) {
-          var elem;
-          elem = document.getElementById(id);
-          elem.href = "#";
-          return uu.domListen(elem, "mousedown touchstart", fn);
-        };
-        bind("up", function() {
+        uu.domListen(document.getElementById("up"), "mousedown touchstart", function() {
           return gotoVerse(-1);
         });
-        bind("prev", function() {
+        uu.domListen(document.getElementById("prev"), "mousedown touchstart", function() {
           return gotoVerse(+n - 1);
         });
-        bind("next", function() {
+        uu.domListen(document.getElementById("next"), "mousedown touchstart", function() {
           return gotoVerse(+n + 1);
         });
       }
@@ -379,12 +373,37 @@
   }
 
   uu.onComplete(listenVerse = function() {
-    var verse, _i, _len, _ref, _results;
-    _ref = document.getElementsByClassName("verse");
-    _results = [];
+    var button, fname, song, songIdx, verse, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _results;
+    _ref = document.getElementsByClassName("songButton");
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      verse = _ref[_i];
-      _results.push(uu.domListen(verse, "click", function(e) {
+      button = _ref[_i];
+      console.log(button);
+      uu.domListen(button, "mousedown touchstart", function() {
+        return location.href = button.href;
+      });
+    }
+    fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0];
+    for (_j = 0, _len1 = songs.length; _j < _len1; _j++) {
+      song = songs[_j];
+      if (song.filename === fname) {
+        break;
+      }
+    }
+    songIdx = songs.indexOf(song);
+    uu.domListen(document.getElementById("up"), "mousedown touchstart", function() {
+      return location.href = "index.html";
+    });
+    uu.domListen(document.getElementById("prev"), "mousedown touchstart", function() {
+      return location.href = songs[(songs.length + songIdx - 1) % songs.length].filename;
+    });
+    uu.domListen(document.getElementById("next"), "mousedown touchstart", function() {
+      return location.href = songs[(songIdx + 1) % songs.length].filename;
+    });
+    _ref1 = document.getElementsByClassName("verse");
+    _results = [];
+    for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+      verse = _ref1[_k];
+      _results.push(uu.domListen(verse, "mousedown touchstart", function(e) {
         return gotoVerse(this.dataset.number);
       }));
     }

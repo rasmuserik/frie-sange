@@ -257,16 +257,15 @@ execute main
       ["div.menu"
           style:
             fontSize: 100
-        ["a.button#prev", {href: songs[(songs.length + songIdx - 1) % songs.length].filename}, "<"]
-        ["a.button#up", {href: "index.html"}, "···"]
-        ["a.button#next", {href: songs[(songIdx + 1) % songs.length].filename}, ">"]]
+        ["span.button#prev", {href: songs[(songs.length + songIdx - 1) % songs.length].filename}, "<"]
+        ["span.button#up", {href: "index.html"}, "···"]
+        ["span.button#next", {href: songs[(songIdx + 1) % songs.length].filename}, ">"]]
     
     listenVerse = undefined
     
     if isWindow
       gotoVerse = (n) -> #{{{2
         fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0]
-    
         for song in songs
           break if song.filename == fname
         return if !song or song.lyrics.length == 1
@@ -278,21 +277,33 @@ execute main
           listenVerse()
         else
           document.body.innerHTML = uu.jsonml2html ["div", lyricsJsonml({lyrics:[song.lyrics[n]]}), navigation(song)]
-          bind = (id, fn) ->
-            elem = document.getElementById(id)
-            elem.href = "#"
-            uu.domListen elem, "mousedown touchstart", fn
-    
-          bind "up", -> gotoVerse -1
-          bind "prev", -> gotoVerse +n - 1
-          bind "next", -> gotoVerse +n + 1
+          uu.domListen document.getElementById("up"), "mousedown touchstart", -> gotoVerse -1
+          uu.domListen document.getElementById("prev"), "mousedown touchstart", -> gotoVerse +n - 1
+          uu.domListen document.getElementById("next"), "mousedown touchstart", -> gotoVerse +n + 1
     
         document.getElementById("style").innerHTML = uu.obj2style style()
         false
       
+    
+    
     uu.onComplete listenVerse = -> #{{{2 event handlers
+      for button in document.getElementsByClassName "songButton"
+        console.log button
+        uu.domListen button, "mousedown touchstart", -> location.href = button.href
+      fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0]
+      for song in songs
+        break if song.filename == fname
+      songIdx = songs.indexOf song
+    
+      uu.domListen document.getElementById("up"), "mousedown touchstart", ->
+        location.href = "index.html"
+      uu.domListen document.getElementById("prev"), "mousedown touchstart", ->
+        location.href = songs[(songs.length + songIdx - 1) % songs.length].filename
+      uu.domListen document.getElementById("next"), "mousedown touchstart", ->
+        location.href = songs[(songIdx + 1) % songs.length].filename
+    
       for verse in document.getElementsByClassName "verse"
-        uu.domListen verse, "click", (e) ->
+        uu.domListen verse, "mousedown touchstart", (e) ->
           gotoVerse this.dataset.number
     
     
