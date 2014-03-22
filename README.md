@@ -264,7 +264,8 @@ execute main
     listenVerse = undefined
     
     if isWindow
-      gotoVerse = (n) -> #{{{2
+      gotoVerse = (n, e) -> #{{{2
+        e?.preventDefault()
         fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0]
         for song in songs
           break if song.filename == fname
@@ -277,9 +278,9 @@ execute main
           listenVerse()
         else
           document.body.innerHTML = uu.jsonml2html ["div", lyricsJsonml({lyrics:[song.lyrics[n]]}), navigation(song)]
-          uu.domListen document.getElementById("up"), "mousedown touchstart", -> gotoVerse -1
-          uu.domListen document.getElementById("prev"), "mousedown touchstart", -> gotoVerse +n - 1
-          uu.domListen document.getElementById("next"), "mousedown touchstart", -> gotoVerse +n + 1
+          uu.domListen document.getElementById("up"), "mousedown touchstart", (e) -> gotoVerse -1, e
+          uu.domListen document.getElementById("prev"), "mousedown touchstart", (e) -> gotoVerse +n - 1, e
+          uu.domListen document.getElementById("next"), "mousedown touchstart", (e) -> gotoVerse +n + 1, e
     
         document.getElementById("style").innerHTML = uu.obj2style style()
         false
@@ -289,7 +290,7 @@ execute main
     uu.onComplete listenVerse = -> #{{{2 event handlers
       for button in document.getElementsByClassName "songButton"
         console.log button
-        uu.domListen button, "mousedown touchstart", -> location.href = this.href
+        uu.domListen button, "mousedown touchstart", (e) -> e.preventDefault(); location.href = this.href
     
       fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0]
       for song in songs
@@ -325,58 +326,59 @@ execute main
         fs.writeFile song.filename, songHTML song, "utf8"
     
     if isNodeJs then process.nextTick -> #{{{2
-      pages = [{title: "Frie Børnesange", filename: "about.html"}].concat songs
       content = ["div"]
-      for page in pages
+      for page in songs
         content.push ["a.songButton",{href: page.filename}, page.title]
         content.push " "
     
       fs.writeFile "index.html", html("Frie Børnesange", content), "utf8"
     
-      fs.writeFile "about.html", html("Frie Børnesange", info), "utf8"
-    
-    
-
-# Information page
-
-- motivation
-- approach
-  - Songs are based on multible sources
-  - Most are traditionals
-- sources
-  - wikipedia
-  - ugle.dk
-  - din egen sangbog
-  - diverse søgeresultater ved søgning på nettet.
-- noter
-  - oppe i norge er en krydsning af den danske og oprindelige norske, med tilføjede vers, gendigtet, inspireret af http://www.barnesanger.no/olle-bolle.html
-  - lille peter eddekop det almindelige vers er frit / tradionelt, 
-    - øvrige vers blev tilføjet i 1948 og er ophavsretsligt begrænset
-
-    info = ["div"
-        ["div"
-            style:
-              display: "inline-block"
-              verticalAlign: "top"
-              width: "44%"
-              paddingLeft: "3%"
-              paddingRight: "3%"
-          ["h1", "Frie Børnesange"]
-          ["div.notes", "Mange børnesange kan hverken synges offentligt, eller deles med andre på grund af ophavsretslige begrænsninger."]
-          ["div.notes", "Dette er en samling af sange, der efter min bedste overbevisning ikke længere er dækket af copyright. De er fundet ved, for hver sang, at gennemsøge sangbøger og internet, og finde forskellige udgaver af sangen, og sikre der enten ikke er kendt forfatter, eller han/hun er død for over 70 år siden."]]
-        ["div"
-            style:
-              display: "inline-block"
-              verticalAlign: "top"
-              width: "44%"
-              paddingLeft: "3%"
-              paddingRight: "3%"
-          ["h1", "- de enkelte sange"]
-          ["div.notes", ["em", "Oppe i Norge"], " er en dansk version af den norske børnesang Oppe i fjeldet. Versionen er en krydsning mellem den danske og den norske traditionelle sange, - med ekstra vers tilføjet på samme form som i den norske. De yderligere vers er gendigtet af undertegnede, frigives hermed som public domain (CC0)."]
-          ["div.notes", ["em", "Lille Peter Eddekop"], " eksisterer så vidt jeg ved i flere udgaver: der det frie traditionelle vers, der anvendes her, men der er også en længere udgave hvor flere vers blev tilføjet i 1948, så yderligere vers man støder på, udover det traditionelle, er typisk under ophavsretslige begrænsninger."]]]
 
 # Actual songs
 
+    song "Om Frie Sange", #{{{2
+      lyrics: """
+        <span style="font-size: 200%">Frie Børnesange</span><br>
+        Mange børnesange kan hverken 
+        synges offentligt, eller deles med andre 
+        på grund af ophavsretslige begrænsninger.
+    
+        Dette er en samling af sange, 
+        der efter min bedste overbevisning 
+        ikke længere er dækket af copyright. 
+        De er fundet ved, for hver sang, 
+        at gennemsøge sangbøger og internet, 
+        og finde forskellige udgaver af sangen, 
+        og sikre der enten ikke er kendt forfatter, 
+        eller han/hun er død for over 70 år siden.
+    
+        Denne app er lavet så den både kan installeres
+        på telefoner og tablets, samt køre direkt
+        i en webbrowser. Der er lavet særligt software
+        der tilpasser layout og visning så sangenes layout
+        automatisk tilpasses siden. Hvis man klikke på 
+        de enkelte vers, tilpasses de så de fylder hele siden.
+    
+        <span style="font-size: 200%">De enkelte sange</span><br>
+        <em>Oppe i Norge</em> er en dansk version 
+        af den norske børnesang Oppe i fjeldet. 
+        Versionen er en krydsning mellem 
+        den danske og den norske traditionelle sang, 
+        - med ekstra vers tilføjet 
+        på samme form som i den norske. 
+        De yderligere vers er gendigtet af undertegnede, 
+        og frigives hermed som public domain (CC0).
+    
+        <em>Lille Peter Edderkop</em>
+        eksisterer så vidt jeg ved i flere udgaver: 
+        der det frie traditionelle vers, der anvendes her, 
+        men der er også en længere udgave 
+        hvor flere vers blev tilføjet i 1948, 
+        så yderligere vers man støder på, 
+        udover det traditionelle, 
+        er typisk under ophavsretslige begrænsninger.
+      """
+    
     song "Der sad to katte på et bord", #{{{2
       lyrics: """
         Der sad to katte på et bord
