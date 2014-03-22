@@ -111,63 +111,66 @@ style = -> #{{{2
   if !isNodeJs
     lyrics = document.getElementsByClassName("lyrics")[0]
     if lyrics
-      lyrics.style.color = "white"
       lyrics.style.WebkitTransform = lyrics.style.transform = "none" if lyrics
-    if lyrics then uu.nextTick ->
-      width = 0
-      heights = []
-      ratio = w / h
-
-      colspace = 90
-
-      for verse in document.getElementsByClassName "verse"
-        width = Math.max(width, verse.offsetWidth)
-        heights.push verse.offsetHeight + 30
-
-      #{{{4 find best ratio
-      bestDiff = 100
-      bestLayout = undefined
-      colHeight = (verseLengths) -> arraySum verseLengths
-      scale = 0
-      for i in [0.05..1.05] by 0.05
-        layout = splitEven heights, i
-        layoutHeight = Math.max.apply null, layout.map colHeight
-        layoutWidth = width * layout.length
-        layoutRatio = layoutWidth / layoutHeight
-        layoutDiff = Math.abs(layoutRatio - ratio)
-        if layoutDiff < bestDiff
-          bestLayout = layout
-          bestDiff = layoutDiff
-
-      #{{{4 lay out the verses
-      row = 0
-      col = 0
-      top = 0
-      totalHeight = 0
-      for verse in document.getElementsByClassName "verse"
-        if !bestLayout[col][row]
-          ++col; row = 0
-          top = 0
-        verse.style.position = "absolute"
-        verse.style.width = "#{width}px"
-        verse.style.top = "#{top}px"
-        verse.style.left = "#{col * (width + colspace)}px"
-        top += bestLayout[col][row]
-        totalHeight = Math.max(totalHeight, top)
-        ++row
-      totalWidth = (col+1) * width + col * colspace
-      #{{{4
-      lyrics.style.position = "absolute"
-      scale = Math.min(w *.95 / totalWidth, (h - buttonSize) *.95 / (totalHeight))
-      lyrics.style.WebkitTransform = lyrics.style.transform = "scale(#{scale})"
-      lyrics.style.top = "#{((h - buttonSize)-totalHeight*scale)/2}px"
-      lyrics.style.left = "#{(w-totalWidth*scale)/2}px"
-      lyrics.style.color = "black"
-
+    uu.nextTick -> #{{{3
+      if lyrics
+        width = 0
+        heights = []
+        ratio = w / h
+  
+        colspace = 90
+  
+        for verse in document.getElementsByClassName "verse"
+          width = Math.max(width, verse.offsetWidth)
+          heights.push verse.offsetHeight + 30
+  
+        #{{{4 find best ratio
+        bestDiff = 100
+        bestLayout = undefined
+        colHeight = (verseLengths) -> arraySum verseLengths
+        scale = 0
+        for i in [0.05..1.05] by 0.05
+          layout = splitEven heights, i
+          layoutHeight = Math.max.apply null, layout.map colHeight
+          layoutWidth = width * layout.length
+          layoutRatio = layoutWidth / layoutHeight
+          layoutDiff = Math.abs(layoutRatio - ratio)
+          if layoutDiff < bestDiff
+            bestLayout = layout
+            bestDiff = layoutDiff
+  
+        #{{{4 lay out the verses
+        row = 0
+        col = 0
+        top = 0
+        totalHeight = 0
+        for verse in document.getElementsByClassName "verse"
+          if !bestLayout[col][row]
+            ++col; row = 0
+            top = 0
+          verse.style.position = "absolute"
+          verse.style.width = "#{width}px"
+          verse.style.top = "#{top}px"
+          verse.style.left = "#{col * (width + colspace)}px"
+          top += bestLayout[col][row]
+          totalHeight = Math.max(totalHeight, top)
+          ++row
+        totalWidth = (col+1) * width + col * colspace
+        #{{{4
+        lyrics.style.position = "absolute"
+        scale = Math.min(w *.95 / totalWidth, (h - buttonSize) *.95 / (totalHeight))
+        lyrics.style.WebkitTransform = lyrics.style.transform = "scale(#{scale})"
+        lyrics.style.top = "#{((h - buttonSize)-totalHeight*scale)/2}px"
+        lyrics.style.left = "#{(w-totalWidth*scale)/2}px"
+      document.body.style.color = "black"
+      for elem in document.getElementsByClassName "songButton"
+        elem.style.color = "black"
+  
   #{{{3 final style
   body:
     font: "#{2*unit|0}px ubuntu,sans-serif"
     lineHeight: "150%"
+    color: if isNodeJs then "black" else "white"
   ".notes":
       marginTop: "1em"
       marginBottom: "1em"
@@ -203,7 +206,7 @@ style = -> #{{{2
     lineHeight: "150%"
     width: sqInner
     margin: 0
-    color: "black"
+    color: if isNodeJs then "black" else "white"
     paddingLeft: sqPadding
     paddingRight: sqPadding
     paddingTop: 0
@@ -358,39 +361,39 @@ song "Om Frie Sange", #{{{2
     synges offentligt, eller deles med andre 
     på grund af ophavsretslige begrænsninger.
 
-    Dette er en samling af sange, 
+    Dette er en samling af sange 
     der efter min bedste overbevisning 
     ikke længere er dækket af copyright. 
-    De er fundet ved, for hver sang, 
-    at gennemsøge sangbøger og internet, 
-    og finde forskellige udgaver af sangen, 
-    og sikre der enten ikke er kendt forfatter, 
+    De er fundet ved for hver sang 
+    at gennemsøge sangbøger og internet 
+    og finde forskellige udgaver af sangen 
+    og sikre der enten ikke er kendt forfatter 
     eller han/hun er død for over 70 år siden.
 
     Denne app er lavet så den både kan installeres
-    på telefoner og tablets, samt køre direkt
+    på telefoner og tablets samt køre direkt
     i en webbrowser. Der er lavet særligt software
     der tilpasser layout og visning så sangenes layout
     automatisk tilpasses siden. Hvis man klikke på 
-    de enkelte vers, tilpasses de så de fylder hele siden.
+    de enkelte vers tilpasses de så de fylder hele siden.
 
     <span style="font-size: 200%">De enkelte sange</span><br>
     <em>Oppe i Norge</em> er en dansk version 
     af den norske børnesang Oppe i fjeldet. 
     Versionen er en krydsning mellem 
-    den danske og den norske traditionelle sang, 
+    den danske og den norske traditionelle sang 
     - med ekstra vers tilføjet 
     på samme form som i den norske. 
-    De yderligere vers er gendigtet af undertegnede, 
+    De yderligere vers er gendigtet af undertegnede 
     og frigives hermed som public domain (CC0).
 
     <em>Lille Peter Edderkop</em>
     eksisterer så vidt jeg ved i flere udgaver: 
-    der det frie traditionelle vers, der anvendes her, 
+    der det frie traditionelle vers, der anvendes her 
     men der er også en længere udgave 
-    hvor flere vers blev tilføjet i 1948, 
-    så yderligere vers man støder på, 
-    udover det traditionelle, 
+    hvor flere vers blev tilføjet i 1948 
+    så yderligere vers man støder på 
+    udover det traditionelle 
     er typisk under ophavsretslige begrænsninger.
   """
 

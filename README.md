@@ -43,6 +43,19 @@ execute main
 # code
 
     uu = use "uutil"
+    isTouch = false
+    once = (fn) ->
+      run = true
+      result = undefined
+      (e) ->
+        e.preventDefault()
+        isTouch = true if e.touches
+        return if (!e.touches) && isTouch
+        if run
+          run = false
+          fn.call this
+        return false
+    
     if isNodeJs
       fs = require "fs"
     
@@ -113,71 +126,74 @@ execute main
       if !isNodeJs
         lyrics = document.getElementsByClassName("lyrics")[0]
         if lyrics
-          lyrics.style.color = "white"
           lyrics.style.WebkitTransform = lyrics.style.transform = "none" if lyrics
-        if lyrics then uu.nextTick ->
-          width = 0
-          heights = []
-          ratio = w / h
-    
-          colspace = 90
-    
-          for verse in document.getElementsByClassName "verse"
-            width = Math.max(width, verse.offsetWidth)
-            heights.push verse.offsetHeight + 30
-          console.log heights, width
-    
+        uu.nextTick -> #{{{3
+          if lyrics
+            width = 0
+            heights = []
+            ratio = w / h
+      
+            colspace = 90
+      
+            for verse in document.getElementsByClassName "verse"
+              width = Math.max(width, verse.offsetWidth)
+              heights.push verse.offsetHeight + 30
+      
 
 #### find best ratio
 
-          bestDiff = 100
-          bestLayout = undefined
-          colHeight = (verseLengths) -> arraySum verseLengths
-          scale = 0
-          for i in [0.05..1.05] by 0.05
-            layout = splitEven heights, i
-            layoutHeight = Math.max.apply null, layout.map colHeight
-            layoutWidth = width * layout.length
-            layoutRatio = layoutWidth / layoutHeight
-            layoutDiff = Math.abs(layoutRatio - ratio)
-            if layoutDiff < bestDiff
-              bestLayout = layout
-              bestDiff = layoutDiff
-    
+            bestDiff = 100
+            bestLayout = undefined
+            colHeight = (verseLengths) -> arraySum verseLengths
+            scale = 0
+            for i in [0.05..1.05] by 0.05
+              layout = splitEven heights, i
+              layoutHeight = Math.max.apply null, layout.map colHeight
+              layoutWidth = width * layout.length
+              layoutRatio = layoutWidth / layoutHeight
+              layoutDiff = Math.abs(layoutRatio - ratio)
+              if layoutDiff < bestDiff
+                bestLayout = layout
+                bestDiff = layoutDiff
+      
 
 #### lay out the verses
 
-          row = 0
-          col = 0
-          top = 0
-          totalHeight = 0
-          for verse in document.getElementsByClassName "verse"
-            if !bestLayout[col][row]
-              ++col; row = 0
-              top = 0
-            verse.style.position = "absolute"
-            verse.style.width = "#{width}px"
-            verse.style.top = "#{top}px"
-            verse.style.left = "#{col * (width + colspace)}px"
-            top += bestLayout[col][row]
-            totalHeight = Math.max(totalHeight, top)
-            ++row
-          totalWidth = (col+1) * width + col * colspace
+            row = 0
+            col = 0
+            top = 0
+            totalHeight = 0
+            for verse in document.getElementsByClassName "verse"
+              if !bestLayout[col][row]
+                ++col; row = 0
+                top = 0
+              verse.style.position = "absolute"
+              verse.style.width = "#{width}px"
+              verse.style.top = "#{top}px"
+              verse.style.left = "#{col * (width + colspace)}px"
+              top += bestLayout[col][row]
+              totalHeight = Math.max(totalHeight, top)
+              ++row
+            totalWidth = (col+1) * width + col * colspace
 
 #### 
 
-          lyrics.style.position = "absolute"
-          scale = Math.min(w *.95 / totalWidth, (h - buttonSize) *.95 / (totalHeight))
-          lyrics.style.WebkitTransform = lyrics.style.transform = "scale(#{scale})"
-          lyrics.style.top = "#{((h - buttonSize)-totalHeight*scale)/2}px"
-          lyrics.style.left = "#{(w-totalWidth*scale)/2}px"
-          lyrics.style.color = "black"
+            lyrics.style.position = "absolute"
+            scale = Math.min(w *.95 / totalWidth, (h - buttonSize) *.95 / (totalHeight))
+            lyrics.style.WebkitTransform = lyrics.style.transform = "scale(#{scale})"
+            lyrics.style.top = "#{((h - buttonSize)-totalHeight*scale)/2}px"
+            lyrics.style.left = "#{(w-totalWidth*scale)/2}px"
+          document.body.style.color = "black"
+          for elem in document.getElementsByClassName "songButton"
+            elem.style.color = "black"
+      
 
 ### final style
 
       body:
         font: "#{2*unit|0}px ubuntu,sans-serif"
         lineHeight: "150%"
+        color: if isNodeJs then "black" else "white"
       ".notes":
           marginTop: "1em"
           marginBottom: "1em"
@@ -213,7 +229,7 @@ execute main
         lineHeight: "150%"
         width: sqInner
         margin: 0
-        color: "black"
+        color: if isNodeJs then "black" else "white"
         paddingLeft: sqPadding
         paddingRight: sqPadding
         paddingTop: 0
@@ -224,10 +240,20 @@ execute main
         border: "#{lineWidth}px solid black"
         borderRadius: sqSize * .15 | 0
         verticalAlign: "middle"
+      "*":
+        WebkitTouchCallout: "none"
+        WebkitTextSizeAdjust: "none"
+        WebkitTapHighlightColor: "rgba(0,0,0,0)"
+        WebkitUserSelect: "none"
     
-    if isWindow then document.ondeviceready = window.onload = window.onresize = -> #{{{2
+    if isWindow then document.ondeviceready = window.onload = -> #{{{2
         navigator.splashscreen?.hide?()
         document.getElementById("style").innerHTML = uu.obj2style style()
+    if isWindow then window.onresize = ->
+      if verseNo == -1
+        openHref fname
+      else
+        gotoVerse verseNo
     
     lyricsJsonml = (song) -> #{{{2
       verseNo = 0
@@ -237,6 +263,9 @@ execute main
     
     html = (title, body) -> #{{{2
       "<!DOCTYPE html>" + uu.jsonml2html ["html"
+
+manifest: "cache.manifest"
+
         ["head"
           ["title", title]
           ["meta", {"http-equiv": "Content-Type", content: "text/html;charset=UTF-8"}]
@@ -246,14 +275,13 @@ execute main
             content: "width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0"]
           ["script", {src: "bower_components/uutil/uutil.js"}, ""]
           ["script", {src: "frie-sange.js"}, ""]
-          ["style", ["rawhtml", "@font-face{font-family:Ubuntu;font-weight:400;src:url(/font/ubuntu-latin1.ttf) format(truetype);}"]]
+          ["style", ["rawhtml", "@font-face{font-family:Ubuntu;font-weight:400;src:url(ubuntu-latin1.ttf) format(truetype);}"]]
           ["style#style", ["rawhtml", uu.obj2style style()]]
           ["meta", {name: "format-detection", content: "telephone=no"}]]
         ["body", body]]
     
     navigation = (song) -> #{{{2
       songIdx = songs.indexOf song
-      console.log songIdx, (songIdx - 1) % songs.length
       ["div.menu"
           style:
             fontSize: 100
@@ -263,10 +291,12 @@ execute main
     
     listenVerse = undefined
     
+    fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0] if isWindow
+    verseNo = -1
+    
     if isWindow
       gotoVerse = (n, e) -> #{{{2
         e?.preventDefault()
-        fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0]
         for song in songs
           break if song.filename == fname
         return if !song or song.lyrics.length == 1
@@ -274,38 +304,63 @@ execute main
         uu.log "gotoVerse", n
     
         if (n == -1) || (n >= song.lyrics.length)
+          verseNo = -1
           document.body.innerHTML = uu.jsonml2html ["div", lyricsJsonml(song), navigation(song)]
           listenVerse()
         else
+          verseNo = n
           document.body.innerHTML = uu.jsonml2html ["div", lyricsJsonml({lyrics:[song.lyrics[n]]}), navigation(song)]
-          uu.domListen document.getElementById("up"), "mousedown touchstart", (e) -> gotoVerse -1, e
-          uu.domListen document.getElementById("prev"), "mousedown touchstart", (e) -> gotoVerse +n - 1, e
-          uu.domListen document.getElementById("next"), "mousedown touchstart", (e) -> gotoVerse +n + 1, e
+          uu.domListen document.getElementById("up"), "mousedown touchstart", once -> gotoVerse -1
+          uu.domListen document.getElementById("prev"), "mousedown touchstart", once -> gotoVerse +n - 1
+          uu.domListen document.getElementById("next"), "mousedown touchstart", once -> gotoVerse +n + 1
     
         document.getElementById("style").innerHTML = uu.obj2style style()
         false
       
     
     
+    indexPage = ["div"] #{{{2
+    uu.nextTick ->
+      for page in songs
+        indexPage.push ["a.songButton",{href: page.filename}, page.title]
+        indexPage.push " "
+      if isNodeJs #{{{3
+        fs.writeFile "index.html", html("Frie Børnesange", indexPage), "utf8"
+        fs.writeFile "cache.manifest", "CACHE MANIFEST\n# version #{new Date()}\n" +
+          ["index.html", "ubuntu-latin1.ttf", "bower_components/uutil/uutil.js", "frie-sange.js"].concat(songs.map (a) -> a.filename).join "\n"
+    
+    openHref = (href) -> #{{{2
+      href = href.split("/").slice(-1)[0]
+      fname = href
+      verseNo = -1
+      for song in songs
+        break if song.filename == href
+      console.log href, song.filename
+      if song.filename == href
+        document.body.innerHTML = uu.jsonml2html ["div", lyricsJsonml(song), navigation(song)]
+      else
+        document.body.innerHTML = uu.jsonml2html indexPage
+      listenVerse()
+      document.getElementById("style").innerHTML = uu.obj2style style()
+    
+    
     uu.onComplete listenVerse = -> #{{{2 event handlers
       for button in document.getElementsByClassName "songButton"
-        console.log button
-        uu.domListen button, "mousedown touchstart", (e) -> e.preventDefault(); location.href = this.href
+        uu.domListen button, "mousedown touchstart click", once -> openHref this.href
     
-      fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0]
       for song in songs
         break if song.filename == fname
       songIdx = songs.indexOf song
     
-      uu.domListen document.getElementById("up"), "mousedown touchstart", ->
-        location.href = "index.html"
-      uu.domListen document.getElementById("prev"), "mousedown touchstart", ->
-        location.href = songs[(songs.length + songIdx - 1) % songs.length].filename
-      uu.domListen document.getElementById("next"), "mousedown touchstart", ->
-        location.href = songs[(songIdx + 1) % songs.length].filename
+      uu.domListen document.getElementById("up"), "mousedown touchstart", once ->
+        openHref "index.html"
+      uu.domListen document.getElementById("prev"), "mousedown touchstart", once ->
+        openHref songs[(songs.length + songIdx - 1) % songs.length].filename
+      uu.domListen document.getElementById("next"), "mousedown touchstart", once ->
+        openHref songs[(songIdx + 1) % songs.length].filename
     
       for verse in document.getElementsByClassName "verse"
-        uu.domListen verse, "mousedown touchstart", (e) ->
+        uu.domListen verse, "mousedown touchstart", once ->
           gotoVerse this.dataset.number
     
     
@@ -325,14 +380,6 @@ execute main
       if isNodeJs then uu.nextTick ->
         fs.writeFile song.filename, songHTML song, "utf8"
     
-    if isNodeJs then process.nextTick -> #{{{2
-      content = ["div"]
-      for page in songs
-        content.push ["a.songButton",{href: page.filename}, page.title]
-        content.push " "
-    
-      fs.writeFile "index.html", html("Frie Børnesange", content), "utf8"
-    
 
 # Actual songs
 
@@ -343,39 +390,39 @@ execute main
         synges offentligt, eller deles med andre 
         på grund af ophavsretslige begrænsninger.
     
-        Dette er en samling af sange, 
+        Dette er en samling af sange 
         der efter min bedste overbevisning 
         ikke længere er dækket af copyright. 
-        De er fundet ved, for hver sang, 
-        at gennemsøge sangbøger og internet, 
-        og finde forskellige udgaver af sangen, 
-        og sikre der enten ikke er kendt forfatter, 
+        De er fundet ved for hver sang 
+        at gennemsøge sangbøger og internet 
+        og finde forskellige udgaver af sangen 
+        og sikre der enten ikke er kendt forfatter 
         eller han/hun er død for over 70 år siden.
     
         Denne app er lavet så den både kan installeres
-        på telefoner og tablets, samt køre direkt
+        på telefoner og tablets samt køre direkt
         i en webbrowser. Der er lavet særligt software
         der tilpasser layout og visning så sangenes layout
         automatisk tilpasses siden. Hvis man klikke på 
-        de enkelte vers, tilpasses de så de fylder hele siden.
+        de enkelte vers tilpasses de så de fylder hele siden.
     
         <span style="font-size: 200%">De enkelte sange</span><br>
         <em>Oppe i Norge</em> er en dansk version 
         af den norske børnesang Oppe i fjeldet. 
         Versionen er en krydsning mellem 
-        den danske og den norske traditionelle sang, 
+        den danske og den norske traditionelle sang 
         - med ekstra vers tilføjet 
         på samme form som i den norske. 
-        De yderligere vers er gendigtet af undertegnede, 
+        De yderligere vers er gendigtet af undertegnede 
         og frigives hermed som public domain (CC0).
     
         <em>Lille Peter Edderkop</em>
         eksisterer så vidt jeg ved i flere udgaver: 
-        der det frie traditionelle vers, der anvendes her, 
+        der det frie traditionelle vers, der anvendes her 
         men der er også en længere udgave 
-        hvor flere vers blev tilføjet i 1948, 
-        så yderligere vers man støder på, 
-        udover det traditionelle, 
+        hvor flere vers blev tilføjet i 1948 
+        så yderligere vers man støder på 
+        udover det traditionelle 
         er typisk under ophavsretslige begrænsninger.
       """
     

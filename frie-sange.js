@@ -142,14 +142,13 @@
     if (!isNodeJs) {
       lyrics = document.getElementsByClassName("lyrics")[0];
       if (lyrics) {
-        lyrics.style.color = "white";
         if (lyrics) {
           lyrics.style.WebkitTransform = lyrics.style.transform = "none";
         }
       }
-      if (lyrics) {
-        uu.nextTick(function() {
-          var bestDiff, bestLayout, col, colHeight, colspace, heights, i, layout, layoutDiff, layoutHeight, layoutRatio, layoutWidth, ratio, row, scale, top, totalHeight, totalWidth, verse, width, _j, _k, _l, _len1, _len2, _ref1, _ref2;
+      uu.nextTick(function() {
+        var bestDiff, bestLayout, col, colHeight, colspace, elem, heights, i, layout, layoutDiff, layoutHeight, layoutRatio, layoutWidth, ratio, row, scale, top, totalHeight, totalWidth, verse, width, _j, _k, _l, _len1, _len2, _len3, _m, _ref1, _ref2, _ref3, _results;
+        if (lyrics) {
           width = 0;
           heights = [];
           ratio = w / h;
@@ -203,14 +202,22 @@
           lyrics.style.WebkitTransform = lyrics.style.transform = "scale(" + scale + ")";
           lyrics.style.top = "" + (((h - buttonSize) - totalHeight * scale) / 2) + "px";
           lyrics.style.left = "" + ((w - totalWidth * scale) / 2) + "px";
-          return lyrics.style.color = "black";
-        });
-      }
+        }
+        document.body.style.color = "black";
+        _ref3 = document.getElementsByClassName("songButton");
+        _results = [];
+        for (_m = 0, _len3 = _ref3.length; _m < _len3; _m++) {
+          elem = _ref3[_m];
+          _results.push(elem.style.color = "black");
+        }
+        return _results;
+      });
     }
     return {
       body: {
         font: "" + (2 * unit | 0) + "px ubuntu,sans-serif",
-        lineHeight: "150%"
+        lineHeight: "150%",
+        color: isNodeJs ? "black" : "white"
       },
       ".notes": {
         marginTop: "1em",
@@ -251,7 +258,7 @@
         lineHeight: "150%",
         width: sqInner,
         margin: 0,
-        color: "black",
+        color: isNodeJs ? "black" : "white",
         paddingLeft: sqPadding,
         paddingRight: sqPadding,
         paddingTop: 0,
@@ -515,7 +522,7 @@
   };
 
   song("Om Frie Sange", {
-    lyrics: "<span style=\"font-size: 200%\">Frie Børnesange</span><br>\nMange børnesange kan hverken \nsynges offentligt, eller deles med andre \npå grund af ophavsretslige begrænsninger.\n\nDette er en samling af sange, \nder efter min bedste overbevisning \nikke længere er dækket af copyright. \nDe er fundet ved, for hver sang, \nat gennemsøge sangbøger og internet, \nog finde forskellige udgaver af sangen, \nog sikre der enten ikke er kendt forfatter, \neller han/hun er død for over 70 år siden.\n\nDenne app er lavet så den både kan installeres\npå telefoner og tablets, samt køre direkt\ni en webbrowser. Der er lavet særligt software\nder tilpasser layout og visning så sangenes layout\nautomatisk tilpasses siden. Hvis man klikke på \nde enkelte vers, tilpasses de så de fylder hele siden.\n\n<span style=\"font-size: 200%\">De enkelte sange</span><br>\n<em>Oppe i Norge</em> er en dansk version \naf den norske børnesang Oppe i fjeldet. \nVersionen er en krydsning mellem \nden danske og den norske traditionelle sang, \n- med ekstra vers tilføjet \npå samme form som i den norske. \nDe yderligere vers er gendigtet af undertegnede, \nog frigives hermed som public domain (CC0).\n\n<em>Lille Peter Edderkop</em>\neksisterer så vidt jeg ved i flere udgaver: \nder det frie traditionelle vers, der anvendes her, \nmen der er også en længere udgave \nhvor flere vers blev tilføjet i 1948, \nså yderligere vers man støder på, \nudover det traditionelle, \ner typisk under ophavsretslige begrænsninger."
+    lyrics: "<span style=\"font-size: 200%\">Frie Børnesange</span><br>\nMange børnesange kan hverken \nsynges offentligt, eller deles med andre \npå grund af ophavsretslige begrænsninger.\n\nDette er en samling af sange \nder efter min bedste overbevisning \nikke længere er dækket af copyright. \nDe er fundet ved for hver sang \nat gennemsøge sangbøger og internet \nog finde forskellige udgaver af sangen \nog sikre der enten ikke er kendt forfatter \neller han/hun er død for over 70 år siden.\n\nDenne app er lavet så den både kan installeres\npå telefoner og tablets samt køre direkt\ni en webbrowser. Der er lavet særligt software\nder tilpasser layout og visning så sangenes layout\nautomatisk tilpasses siden. Hvis man klikke på \nde enkelte vers tilpasses de så de fylder hele siden.\n\n<span style=\"font-size: 200%\">De enkelte sange</span><br>\n<em>Oppe i Norge</em> er en dansk version \naf den norske børnesang Oppe i fjeldet. \nVersionen er en krydsning mellem \nden danske og den norske traditionelle sang \n- med ekstra vers tilføjet \npå samme form som i den norske. \nDe yderligere vers er gendigtet af undertegnede \nog frigives hermed som public domain (CC0).\n\n<em>Lille Peter Edderkop</em>\neksisterer så vidt jeg ved i flere udgaver: \nder det frie traditionelle vers, der anvendes her \nmen der er også en længere udgave \nhvor flere vers blev tilføjet i 1948 \nså yderligere vers man støder på \nudover det traditionelle \ner typisk under ophavsretslige begrænsninger."
   });
 
   song("Der sad to katte på et bord", {
