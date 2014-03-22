@@ -232,6 +232,7 @@ lyricsJsonml = (song) -> #{{{2
 
 html = (title, body) -> #{{{2
   "<!DOCTYPE html>" + uu.jsonml2html ["html"
+       manifest: "cache.manifest"
     ["head"
       ["title", title]
       ["meta", {"http-equiv": "Content-Type", content: "text/html;charset=UTF-8"}]
@@ -241,7 +242,7 @@ html = (title, body) -> #{{{2
         content: "width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0"]
       ["script", {src: "bower_components/uutil/uutil.js"}, ""]
       ["script", {src: "frie-sange.js"}, ""]
-      ["style", ["rawhtml", "@font-face{font-family:Ubuntu;font-weight:400;src:url(/font/ubuntu-latin1.ttf) format(truetype);}"]]
+      ["style", ["rawhtml", "@font-face{font-family:Ubuntu;font-weight:400;src:url(ubuntu-latin1.ttf) format(truetype);}"]]
       ["style#style", ["rawhtml", uu.obj2style style()]]
       ["meta", {name: "format-detection", content: "telephone=no"}]]
     ["body", body]]
@@ -325,6 +326,9 @@ if isNodeJs then process.nextTick -> #{{{2
     content.push " "
 
   fs.writeFile "index.html", html("Frie Børnesange", content), "utf8"
+  fs.writeFile "cache.manifest", "CACHE MANIFEST\n# version #{new Date()}\n" +
+    ["index.html", "ubuntu-latin1.ttf", "bower_components/uutil/uutil.js", "frie-sange.js"].concat(songs.map (a) -> a.filename).join "\n"
+
 
 #{{{1 Actual songs
 song "Om Frie Sange", #{{{2

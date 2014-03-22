@@ -301,7 +301,9 @@
 
   html = function(title, body) {
     return "<!DOCTYPE html>" + uu.jsonml2html([
-      "html", [
+      "html", {
+        manifest: "cache.manifest"
+      }, [
         "head", ["title", title], [
           "meta", {
             "http-equiv": "Content-Type",
@@ -325,7 +327,7 @@
           "script", {
             src: "frie-sange.js"
           }, ""
-        ], ["style", ["rawhtml", "@font-face{font-family:Ubuntu;font-weight:400;src:url(/font/ubuntu-latin1.ttf) format(truetype);}"]], ["style#style", ["rawhtml", uu.obj2style(style())]], [
+        ], ["style", ["rawhtml", "@font-face{font-family:Ubuntu;font-weight:400;src:url(ubuntu-latin1.ttf) format(truetype);}"]], ["style#style", ["rawhtml", uu.obj2style(style())]], [
           "meta", {
             name: "format-detection",
             content: "telephone=no"
@@ -473,7 +475,10 @@
         ]);
         content.push(" ");
       }
-      return fs.writeFile("index.html", html("Frie Børnesange", content), "utf8");
+      fs.writeFile("index.html", html("Frie Børnesange", content), "utf8");
+      return fs.writeFile("cache.manifest", ("CACHE MANIFEST\n# version " + (new Date()) + "\n") + ["index.html", "ubuntu-latin1.ttf", "bower_components/uutil/uutil.js", "frie-sange.js"].concat(songs.map(function(a) {
+        return a.filename;
+      })).join("\n"));
     });
   }
 
