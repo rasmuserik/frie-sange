@@ -123,7 +123,6 @@ style = -> #{{{2
       for verse in document.getElementsByClassName "verse"
         width = Math.max(width, verse.offsetWidth)
         heights.push verse.offsetHeight + 30
-      console.log heights, width
 
       #{{{4 find best ratio
       bestDiff = 100
@@ -249,7 +248,6 @@ html = (title, body) -> #{{{2
 
 navigation = (song) -> #{{{2
   songIdx = songs.indexOf song
-  console.log songIdx, (songIdx - 1) % songs.length
   ["div.menu"
       style:
         fontSize: 100
@@ -259,10 +257,11 @@ navigation = (song) -> #{{{2
 
 listenVerse = undefined
 
+fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0] if isWindow
+
 if isWindow
   gotoVerse = (n, e) -> #{{{2
     e?.preventDefault()
-    fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0]
     for song in songs
       break if song.filename == fname
     return if !song or song.lyrics.length == 1
@@ -283,22 +282,44 @@ if isWindow
   
 
 
+indexPage = ["div"] #{{{2
+uu.nextTick ->
+  for page in songs
+    indexPage.push ["a.songButton",{href: page.filename}, page.title]
+    indexPage.push " "
+  if isNodeJs #{{{3
+    fs.writeFile "index.html", html("Frie Børnesange", indexPage), "utf8"
+    fs.writeFile "cache.manifest", "CACHE MANIFEST\n# version #{new Date()}\n" +
+      ["index.html", "ubuntu-latin1.ttf", "bower_components/uutil/uutil.js", "frie-sange.js"].concat(songs.map (a) -> a.filename).join "\n"
+
+openHref = (href) -> #{{{2
+  href = href.split("/").slice(-1)[0]
+  fname = href
+  for song in songs
+    break if song.filename == href
+  console.log href, song.filename
+  if song.filename == href
+    document.body.innerHTML = uu.jsonml2html ["div", lyricsJsonml(song), navigation(song)]
+  else
+    document.body.innerHTML = uu.jsonml2html indexPage
+  listenVerse()
+  document.getElementById("style").innerHTML = uu.obj2style style()
+
+
 uu.onComplete listenVerse = -> #{{{2 event handlers
   for button in document.getElementsByClassName "songButton"
-    console.log button
-    uu.domListen button, "mousedown touchstart", (e) -> e.preventDefault(); location.href = this.href
+    uu.domListen button, "mousedown touchstart", (e) -> e.preventDefault(); openHref this.href
 
-  fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0]
   for song in songs
     break if song.filename == fname
   songIdx = songs.indexOf song
 
   uu.domListen document.getElementById("up"), "mousedown touchstart", once ->
-    location.href = "index.html"
+    openHref "index.html"
   uu.domListen document.getElementById("prev"), "mousedown touchstart", once ->
-    location.href = songs[(songs.length + songIdx - 1) % songs.length].filename
+    openHref songs[(songs.length + songIdx - 1) % songs.length].filename
   uu.domListen document.getElementById("next"), "mousedown touchstart", once ->
-    location.href = songs[(songIdx + 1) % songs.length].filename
+    openHref songs[(songIdx + 1) % songs.length].filename
 
   for verse in document.getElementsByClassName "verse"
     uu.domListen verse, "mousedown touchstart", once ->
@@ -318,17 +339,6 @@ song = (title, song) -> #{{{2
   songs.push song
   if isNodeJs then uu.nextTick ->
     fs.writeFile song.filename, songHTML song, "utf8"
-
-if isNodeJs then process.nextTick -> #{{{2
-  content = ["div"]
-  for page in songs
-    content.push ["a.songButton",{href: page.filename}, page.title]
-    content.push " "
-
-  fs.writeFile "index.html", html("Frie Børnesange", content), "utf8"
-  fs.writeFile "cache.manifest", "CACHE MANIFEST\n# version #{new Date()}\n" +
-    ["index.html", "ubuntu-latin1.ttf", "bower_components/uutil/uutil.js", "frie-sange.js"].concat(songs.map (a) -> a.filename).join "\n"
-
 
 #{{{1 Actual songs
 song "Om Frie Sange", #{{{2
