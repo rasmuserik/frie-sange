@@ -34,6 +34,19 @@ onReady = (fn) ->
 
 # {{{1 code
 uu = use "uutil"
+isTouch = false
+once = (fn) ->
+  run = true
+  result = undefined
+  (e) ->
+    e.preventDefault()
+    isTouch = true if e.touches
+    return if (!e.touches) && isTouch
+    if run
+      run = false
+      fn.call this
+    return false
+
 if isNodeJs
   fs = require "fs"
 
@@ -110,7 +123,6 @@ style = -> #{{{2
       for verse in document.getElementsByClassName "verse"
         width = Math.max(width, verse.offsetWidth)
         heights.push verse.offsetHeight + 30
-      console.log heights, width
 
       #{{{4 find best ratio
       bestDiff = 100
@@ -151,6 +163,7 @@ style = -> #{{{2
       lyrics.style.top = "#{((h - buttonSize)-totalHeight*scale)/2}px"
       lyrics.style.left = "#{(w-totalWidth*scale)/2}px"
       lyrics.style.color = "black"
+
   #{{{3 final style
   body:
     font: "#{2*unit|0}px ubuntu,sans-serif"
@@ -201,10 +214,20 @@ style = -> #{{{2
     border: "#{lineWidth}px solid black"
     borderRadius: sqSize * .15 | 0
     verticalAlign: "middle"
+  "*":
+    WebkitTouchCallout: "none"
+    WebkitTextSizeAdjust: "none"
+    WebkitTapHighlightColor: "rgba(0,0,0,0)"
+    WebkitUserSelect: "none"
 
-if isWindow then document.ondeviceready = window.onload = window.onresize = -> #{{{2
+if isWindow then document.ondeviceready = window.onload = -> #{{{2
     navigator.splashscreen?.hide?()
     document.getElementById("style").innerHTML = uu.obj2style style()
+if isWindow then window.onresize = ->
+  if verseNo == -1
+    openHref fname
+  else
+    gotoVerse verseNo
 
 lyricsJsonml = (song) -> #{{{2
   verseNo = 0
@@ -214,6 +237,7 @@ lyricsJsonml = (song) -> #{{{2
 
 html = (title, body) -> #{{{2
   "<!DOCTYPE html>" + uu.jsonml2html ["html"
+       #manifest: "cache.manifest"
     ["head"
       ["title", title]
       ["meta", {"http-equiv": "Content-Type", content: "text/html;charset=UTF-8"}]
@@ -223,14 +247,13 @@ html = (title, body) -> #{{{2
         content: "width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0"]
       ["script", {src: "bower_components/uutil/uutil.js"}, ""]
       ["script", {src: "frie-sange.js"}, ""]
-      ["style", ["rawhtml", "@font-face{font-family:Ubuntu;font-weight:400;src:url(/font/ubuntu-latin1.ttf) format(truetype);}"]]
+      ["style", ["rawhtml", "@font-face{font-family:Ubuntu;font-weight:400;src:url(ubuntu-latin1.ttf) format(truetype);}"]]
       ["style#style", ["rawhtml", uu.obj2style style()]]
       ["meta", {name: "format-detection", content: "telephone=no"}]]
     ["body", body]]
 
 navigation = (song) -> #{{{2
   songIdx = songs.indexOf song
-  console.log songIdx, (songIdx - 1) % songs.length
   ["div.menu"
       style:
         fontSize: 100
@@ -240,10 +263,12 @@ navigation = (song) -> #{{{2
 
 listenVerse = undefined
 
+fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0] if isWindow
+verseNo = -1
+
 if isWindow
   gotoVerse = (n, e) -> #{{{2
     e?.preventDefault()
-    fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0]
     for song in songs
       break if song.filename == fname
     return if !song or song.lyrics.length == 1
@@ -251,38 +276,63 @@ if isWindow
     uu.log "gotoVerse", n
 
     if (n == -1) || (n >= song.lyrics.length)
+      verseNo = -1
       document.body.innerHTML = uu.jsonml2html ["div", lyricsJsonml(song), navigation(song)]
       listenVerse()
     else
+      verseNo = n
       document.body.innerHTML = uu.jsonml2html ["div", lyricsJsonml({lyrics:[song.lyrics[n]]}), navigation(song)]
-      uu.domListen document.getElementById("up"), "mousedown touchstart", (e) -> gotoVerse -1, e
-      uu.domListen document.getElementById("prev"), "mousedown touchstart", (e) -> gotoVerse +n - 1, e
-      uu.domListen document.getElementById("next"), "mousedown touchstart", (e) -> gotoVerse +n + 1, e
+      uu.domListen document.getElementById("up"), "mousedown touchstart", once -> gotoVerse -1
+      uu.domListen document.getElementById("prev"), "mousedown touchstart", once -> gotoVerse +n - 1
+      uu.domListen document.getElementById("next"), "mousedown touchstart", once -> gotoVerse +n + 1
 
     document.getElementById("style").innerHTML = uu.obj2style style()
     false
   
 
 
+indexPage = ["div"] #{{{2
+uu.nextTick ->
+  for page in songs
+    indexPage.push ["a.songButton",{href: page.filename}, page.title]
+    indexPage.push " "
+  if isNodeJs #{{{3
+    fs.writeFile "index.html", html("Frie Børnesange", indexPage), "utf8"
+    fs.writeFile "cache.manifest", "CACHE MANIFEST\n# version #{new Date()}\n" +
+      ["index.html", "ubuntu-latin1.ttf", "bower_components/uutil/uutil.js", "frie-sange.js"].concat(songs.map (a) -> a.filename).join "\n"
+
+openHref = (href) -> #{{{2
+  href = href.split("/").slice(-1)[0]
+  fname = href
+  verseNo = -1
+  for song in songs
+    break if song.filename == href
+  console.log href, song.filename
+  if song.filename == href
+    document.body.innerHTML = uu.jsonml2html ["div", lyricsJsonml(song), navigation(song)]
+  else
+    document.body.innerHTML = uu.jsonml2html indexPage
+  listenVerse()
+  document.getElementById("style").innerHTML = uu.obj2style style()
+
+
 uu.onComplete listenVerse = -> #{{{2 event handlers
   for button in document.getElementsByClassName "songButton"
-    console.log button
-    uu.domListen button, "mousedown touchstart", (e) -> e.preventDefault(); location.href = this.href
+    uu.domListen button, "mousedown touchstart click", once -> openHref this.href
 
-  fname = location.href.replace(/#.*/, "").split("/").slice(-1)[0]
   for song in songs
     break if song.filename == fname
   songIdx = songs.indexOf song
 
-  uu.domListen document.getElementById("up"), "mousedown touchstart", ->
-    location.href = "index.html"
-  uu.domListen document.getElementById("prev"), "mousedown touchstart", ->
-    location.href = songs[(songs.length + songIdx - 1) % songs.length].filename
-  uu.domListen document.getElementById("next"), "mousedown touchstart", ->
-    location.href = songs[(songIdx + 1) % songs.length].filename
+  uu.domListen document.getElementById("up"), "mousedown touchstart", once ->
+    openHref "index.html"
+  uu.domListen document.getElementById("prev"), "mousedown touchstart", once ->
+    openHref songs[(songs.length + songIdx - 1) % songs.length].filename
+  uu.domListen document.getElementById("next"), "mousedown touchstart", once ->
+    openHref songs[(songIdx + 1) % songs.length].filename
 
   for verse in document.getElementsByClassName "verse"
-    uu.domListen verse, "mousedown touchstart", (e) ->
+    uu.domListen verse, "mousedown touchstart", once ->
       gotoVerse this.dataset.number
 
 
@@ -299,14 +349,6 @@ song = (title, song) -> #{{{2
   songs.push song
   if isNodeJs then uu.nextTick ->
     fs.writeFile song.filename, songHTML song, "utf8"
-
-if isNodeJs then process.nextTick -> #{{{2
-  content = ["div"]
-  for page in songs
-    content.push ["a.songButton",{href: page.filename}, page.title]
-    content.push " "
-
-  fs.writeFile "index.html", html("Frie Børnesange", content), "utf8"
 
 #{{{1 Actual songs
 song "Om Frie Sange", #{{{2
