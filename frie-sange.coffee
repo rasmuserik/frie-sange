@@ -34,6 +34,19 @@ onReady = (fn) ->
 
 # {{{1 code
 uu = use "uutil"
+isTouch = false
+once = (fn) ->
+  run = true
+  result = undefined
+  (e) ->
+    e.preventDefault()
+    isTouch = true if e.touches
+    return if (!e.touches) && isTouch
+    if run
+      run = false
+      fn.call this
+    return true
+
 if isNodeJs
   fs = require "fs"
 
@@ -201,6 +214,11 @@ style = -> #{{{2
     border: "#{lineWidth}px solid black"
     borderRadius: sqSize * .15 | 0
     verticalAlign: "middle"
+  "*":
+    WebkitTouchCallout: "none"
+    WebkitTextSizeAdjust: "none"
+    WebkitTapHighlightColor: "rgba(0,0,0,0)"
+    WebkitUserSelect: "none"
 
 if isWindow then document.ondeviceready = window.onload = window.onresize = -> #{{{2
     navigator.splashscreen?.hide?()
@@ -255,9 +273,9 @@ if isWindow
       listenVerse()
     else
       document.body.innerHTML = uu.jsonml2html ["div", lyricsJsonml({lyrics:[song.lyrics[n]]}), navigation(song)]
-      uu.domListen document.getElementById("up"), "mousedown touchstart", (e) -> gotoVerse -1, e
-      uu.domListen document.getElementById("prev"), "mousedown touchstart", (e) -> gotoVerse +n - 1, e
-      uu.domListen document.getElementById("next"), "mousedown touchstart", (e) -> gotoVerse +n + 1, e
+      uu.domListen document.getElementById("up"), "mousedown touchstart", once -> gotoVerse -1
+      uu.domListen document.getElementById("prev"), "mousedown touchstart", once -> gotoVerse +n - 1
+      uu.domListen document.getElementById("next"), "mousedown touchstart", once -> gotoVerse +n + 1
 
     document.getElementById("style").innerHTML = uu.obj2style style()
     false
@@ -274,15 +292,15 @@ uu.onComplete listenVerse = -> #{{{2 event handlers
     break if song.filename == fname
   songIdx = songs.indexOf song
 
-  uu.domListen document.getElementById("up"), "mousedown touchstart", ->
+  uu.domListen document.getElementById("up"), "mousedown touchstart", once ->
     location.href = "index.html"
-  uu.domListen document.getElementById("prev"), "mousedown touchstart", ->
+  uu.domListen document.getElementById("prev"), "mousedown touchstart", once ->
     location.href = songs[(songs.length + songIdx - 1) % songs.length].filename
-  uu.domListen document.getElementById("next"), "mousedown touchstart", ->
+  uu.domListen document.getElementById("next"), "mousedown touchstart", once ->
     location.href = songs[(songIdx + 1) % songs.length].filename
 
   for verse in document.getElementsByClassName "verse"
-    uu.domListen verse, "mousedown touchstart", (e) ->
+    uu.domListen verse, "mousedown touchstart", once ->
       gotoVerse this.dataset.number
 
 
