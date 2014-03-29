@@ -223,7 +223,7 @@ style = -> #{{{2
     WebkitTapHighlightColor: "rgba(0,0,0,0)"
     WebkitUserSelect: "none"
 
-if isWindow then document.ondeviceready = window.onload = -> #{{{2
+if isWindow then uu.onComplete document.ondeviceready = window.onload = -> #{{{2
     navigator.splashscreen?.hide?()
     document.getElementById("style").innerHTML = uu.obj2style style()
 if isWindow then window.onresize = ->

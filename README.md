@@ -1,6 +1,22 @@
 # Frie Børnesange 0.0.0
 
-App med 11 børnesange, der er så gamle at de er frie af ophavsretslige begrænsninger, og derfor kan deles med andre og bruges i sammenhænge udenfor privatsfæren.
+Sangbog med 11 børnesange, der er så gamle at de er frie af ophavsretslige begrænsninger, og derfor kan deles med andre og bruges i sammenhænge udenfor privatsfæren.
+
+Mulighed for at vise hele sangen, eller et enkelt vers ad gangen på skærmen, - designet til at man kan sidde og synge med barn, og derfor kan pege/røre ved teksten, uden at der scrolles rundt.
+
+Sangene i sangbogen er:
+- Der sad to katte på et bord
+- En elefant kom marcherende
+- Lille Peter Edderkop
+- Mæ siger det lille lam
+- Ride ride ranke
+- Jeg gik mig over sø og land
+- Mester Jakob
+- Oppe i Norge der boede tre trolde
+- Tommelfinger, tommelfinger, hvor er du?
+- I skoven skulle være gilde
+- Langt ude i skoven
+
 
 # Roadmap
 
@@ -246,7 +262,7 @@ execute main
         WebkitTapHighlightColor: "rgba(0,0,0,0)"
         WebkitUserSelect: "none"
     
-    if isWindow then document.ondeviceready = window.onload = -> #{{{2
+    if isWindow then uu.onComplete document.ondeviceready = window.onload = -> #{{{2
         navigator.splashscreen?.hide?()
         document.getElementById("style").innerHTML = uu.obj2style style()
     if isWindow then window.onresize = ->

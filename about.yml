@@ -1,22 +1,21 @@
 name: frie-sange
 title: Frie Børnesange
-desc:
-  Sangbog med 11 børnesange, der er så gamle at de er frie af ophavsretslige begrænsninger, og derfor kan deles med andre og bruges i sammenhænge udenfor privatsfæren.
-
-  Mulighed for at vise hele sangen, eller et enkelt vers ad gangen på skærmen, - designet til at man kan sidde og synge med barn, og derfor kan pege/røre ved teksten, uden at der scrolles rundt.
-
-  Sangene i sangbogen er:
-  - Der sad to katte på et bord
-  - En elefant kom marcherende
-  - Lille Peter Edderkop
-  - Mæ siger det lille lam
-  - Ride ride ranke
-  - Jeg gik mig over sø og land
-  - Mester Jakob
-  - Oppe i Norge der boede tre trolde
-  - Tommelfinger, tommelfinger, hvor er du?
-  - I skoven skulle være gilde
-  - Langt ude i skoven
-
+desc: |
+      Sangbog med 11 børnesange, der er så gamle at de er frie af ophavsretslige begrænsninger, og derfor kan deles med andre og bruges i sammenhænge udenfor privatsfæren.
+    
+      Mulighed for at vise hele sangen, eller et enkelt vers ad gangen på skærmen, - designet til at man kan sidde og synge med barn, og derfor kan pege/røre ved teksten, uden at der scrolles rundt.
+    
+      Sangene i sangbogen er:
+      - Der sad to katte på et bord
+      - En elefant kom marcherende
+      - Lille Peter Edderkop
+      - Mæ siger det lille lam
+      - Ride ride ranke
+      - Jeg gik mig over sø og land
+      - Mester Jakob
+      - Oppe i Norge der boede tre trolde
+      - Tommelfinger, tommelfinger, hvor er du?
+      - I skoven skulle være gilde
+      - Langt ude i skoven
 bower: {}
 phonegap: {}

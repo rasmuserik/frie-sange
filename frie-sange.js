@@ -280,7 +280,7 @@
   };
 
   if (isWindow) {
-    document.ondeviceready = window.onload = function() {
+    uu.onComplete(document.ondeviceready = window.onload = function() {
       var _ref;
       if ((_ref = navigator.splashscreen) != null) {
         if (typeof _ref.hide === "function") {
@@ -288,7 +288,7 @@
         }
       }
       return document.getElementById("style").innerHTML = uu.obj2style(style());
-    };
+    });
   }
 
   if (isWindow) {

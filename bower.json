@@ -1,7 +1,7 @@
 {
   "name": "frie-sange",
   "version": "0.0.0",
-  "description": "App med 11 børnesange, der er så gamle at de er frie af ophavsretslige begrænsninger, og derfor kan deles med andre og bruges i sammenhænge udenfor privatsfæren.",
+  "description": "Sangbog med 11 børnesange, der er så gamle at de er frie af ophavsretslige begrænsninger, og derfor kan deles med andre og bruges i sammenhænge udenfor privatsfæren.\n\nMulighed for at vise hele sangen, eller et enkelt vers ad gangen på skærmen, - designet til at man kan sidde og synge med barn, og derfor kan pege/røre ved teksten, uden at der scrolles rundt.\n\nSangene i sangbogen er:\n- Der sad to katte på et bord\n- En elefant kom marcherende\n- Lille Peter Edderkop\n- Mæ siger det lille lam\n- Ride ride ranke\n- Jeg gik mig over sø og land\n- Mester Jakob\n- Oppe i Norge der boede tre trolde\n- Tommelfinger, tommelfinger, hvor er du?\n- I skoven skulle være gilde\n- Langt ude i skoven\n",
   "repository": {
     "type": "git",
     "url": "https://github.com/rasmuserik/frie-sange.git"
