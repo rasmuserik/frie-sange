@@ -1,4 +1,4 @@
-# Frie Børnesange 0.0.0
+# Frie Børnesange 0.0.1
 
 Sangbog med 11 børnesange, der er så gamle at de er frie af ophavsretslige begrænsninger, og derfor kan deles med andre og bruges i sammenhænge udenfor privatsfæren.
 
