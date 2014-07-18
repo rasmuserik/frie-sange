@@ -386,15 +386,6 @@ song "Om Frie Sange", #{{{2
     på samme form som i den norske. 
     De yderligere vers er gendigtet af undertegnede 
     og frigives hermed som public domain (CC0).
-
-    <em>Lille Peter Edderkop</em>
-    eksisterer så vidt jeg ved i flere udgaver: 
-    der det frie traditionelle vers, der anvendes her 
-    men der er også en længere udgave 
-    hvor flere vers blev tilføjet i 1948 
-    så yderligere vers man støder på 
-    udover det traditionelle 
-    er typisk under ophavsretslige begrænsninger.
   """
 
 song "Der sad to katte på et bord", #{{{2
@@ -448,16 +439,41 @@ song "En elefant kom marcherende", #{{{2
     syn's at vejen var så interessant
     at de byder op endnu en elefant..."""
 
-song "Lille Peter Edderkop", #{{{2
+song "En pige gik i enge", #{{{2
   lyrics: """
-    Lille Peter Edderkop,
-      kravlede op ad muren.
-    Så kom regnen
-      og skyllede Peter ned,
-    Så kom solen
-      og tørrede Peters krop.
-    Lille Peter Edderkop
-      kravlede atter op."""
+    En pige gik i enge,
+      hun skulle skære strå.
+    En pige gik i enge,
+      hun skulle skære strå.
+    Så kom en rytter riddende,
+      - åh ja ridende -
+    bød hende stille stå.
+
+
+    Og hvorfor skal jeg stille stå
+      og ikke skære strå?
+    Og hvorfor skal jeg stille stå
+      og ikke skære strå?
+    I aften når jeg kommer hjem 
+      - åh ja, kommer hjem -
+    så vil min moder slå.
+
+    Så tager du en lille klud
+      og binder om din tå.
+    Så tager du en lille klud
+      og binder om din tå.
+    Og siger, du har skåret dig 
+      - åh ja, skåret dig -
+    alt på det skarpe strå.
+
+    Du lær' mig godt at lyve,
+      det kan jeg ikke li.
+    Du lær' mig godt at lyve,
+      det kan jeg ikke li.
+    Nej, heller vil jeg sige 
+      - åh ja, sige -
+    en rytter elsker mig. 
+  """
 
 song "Mæ siger det lille lam", #{{{2
   lyrics: """
